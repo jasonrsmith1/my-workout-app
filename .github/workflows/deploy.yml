@@ -24,7 +24,9 @@ jobs:
         run: |
           python3 - <<'PY'
           import base64, gzip
-          payload = base64.b64decode(open('.deploy/app.gz.b64','rb').read())
+          raw = open('.deploy/app.gz.b64','rb').read().strip()
+          raw += b'=' * (-len(raw) % 4)
+          payload = base64.b64decode(raw)
           with open('index.html','wb') as out:
               out.write(gzip.decompress(payload))
           PY
