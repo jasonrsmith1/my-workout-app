@@ -20,6 +20,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Build app from new Excel version
+        run: |
+          python3 - <<'PY'
+          import base64, gzip
+          payload = base64.b64decode(open('.deploy/app.gz.b64','rb').read())
+          with open('index.html','wb') as out:
+              out.write(gzip.decompress(payload))
+          PY
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
