@@ -20,17 +20,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Build app from new Excel version
-        run: |
-          cat .deploy/chunk_aa .deploy/chunk_ab .deploy/chunk_ac .deploy/chunk_ad .deploy/chunk_ae .deploy/chunk_af .deploy/chunk_ag .deploy/chunk_ah > /tmp/app.b64
-          python3 - <<'PY'
-          import base64, gzip
-          raw = open('/tmp/app.b64','rb').read().strip()
-          raw += b'=' * (-len(raw) % 4)
-          payload = base64.b64decode(raw)
-          with open('index.html','wb') as out:
-              out.write(gzip.decompress(payload))
-          PY
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
