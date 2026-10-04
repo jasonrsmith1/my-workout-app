@@ -1,1 +1,24 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="My Workout"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon.svg"><title>My Workout App</title></head><body><div id="loading" style="font:16px system-ui;padding:32px">Loading My Workout App…</div><script>(async()=>{try{const b=await fetch('./app-20260924.txt?v=20260924').then(r=>{if(!r.ok)throw new Error('App payload unavailable');return r.text()});const bin=atob(b.trim()),raw=Uint8Array.from(bin,c=>c.charCodeAt(0));const ds=new DecompressionStream('gzip');const html=new TextDecoder().decode(await new Response(new Blob([raw]).stream().pipeThrough(ds)).arrayBuffer());document.open();document.write(html);document.close()}catch(e){console.error(e);document.getElementById('loading').textContent='Unable to load the app. Please refresh.'}})();</script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error))}</script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="My Workout"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon.svg"><title>My Workout App</title><style id="ios-mobile-polish">
+@media (max-width: 700px){
+  *,*::before,*::after{box-sizing:border-box}
+  html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+  body{width:100%;max-width:100%;margin:0;padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);overflow-x:hidden}
+  button,input,select,textarea{font:inherit;font-size:16px!important;max-width:100%}
+  button{min-height:44px;touch-action:manipulation}
+  input,select,textarea{min-height:44px}
+  img,svg{max-width:100%;height:auto}
+  table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  [style*="width:100vw"]{width:100%!important}
+  [style*="min-width"]{min-width:0!important}
+  main,section,article,.container,.content,.card,.panel{max-width:100%;width:100%}
+  h1{font-size:26px!important;line-height:1.15}
+  h2{font-size:22px!important;line-height:1.2}
+  h3{font-size:18px!important;line-height:1.25}
+  p{overflow-wrap:anywhere}
+  a{overflow-wrap:anywhere}
+  nav{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  .modal,.dialog{max-width:calc(100vw - 24px)!important;width:calc(100vw - 24px)!important}
+}
+</style></head><body><div id="loading" style="font:16px system-ui;padding:32px">Loading My Workout App…</div><script>(async()=>{try{const b=await fetch('./app-20260924.txt?v=20261004').then(r=>{if(!r.ok)throw new Error('App payload unavailable');return r.text()});const bin=atob(b.trim()),raw=Uint8Array.from(bin,c=>c.charCodeAt(0));const ds=new DecompressionStream('gzip');const html=new TextDecoder().decode(await new Response(new Blob([raw]).stream().pipeThrough(ds)).arrayBuffer());document.open();document.write(html);document.close()}catch(e){console.error(e);document.getElementById('loading').textContent='Unable to load the app. Please refresh.'}})();</script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error))}</script></body></html>
