@@ -22,8 +22,9 @@ jobs:
         uses: actions/checkout@v6
       - name: Build plain Safari-safe app
         run: |
-          gzip -t app-20260924.txt
-          gzip -dc app-20260924.txt > index.html
+          base64 -d app-20260924.txt > app.gz
+          gzip -t app.gz
+          gzip -dc app.gz > index.html
           test -s index.html
           grep -qi '<html' index.html
       - name: Setup Pages
