@@ -85,9 +85,21 @@ function allRoutines(){
   return out;
 }
 function renderCats(){
-  document.getElementById('cats').innerHTML=DATA.map(g=>`<button class="${g.sheet===currentSheet?'active':''}" onclick="selectSheet(${JSON.stringify(g.sheet)})">${esc(label(g.sheet))}</button>`).join('');
+  document.getElementById('cats').innerHTML=DATA.map(g=>`<button class="${g.sheet===currentSheet?'active':''}" onclick="openWorkoutPage(${JSON.stringify(g.sheet)})" aria-label="Open premade workouts for ${esc(label(g.sheet))}">${esc(label(g.sheet))}</button>`).join('');
 }
-function selectSheet(s){currentSheet=s;currentRoutine=0;state.sheet=s;state.routine=0;save();renderWorkout()}
+function openWorkoutPage(s){
+  const g=DATA.find(x=>x.sheet===s);
+  if(!g||!g.routines.length)return;
+  currentSheet=s;
+  currentRoutine=0;
+  state.sheet=s;
+  state.routine=0;
+  save();
+  showTab('workout');
+  renderWorkout();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectSheet(s){openWorkoutPage(s)}
 function renderWorkout(){
   renderCats();
   const g=DATA.find(x=>x.sheet===currentSheet); if(!g)return;
