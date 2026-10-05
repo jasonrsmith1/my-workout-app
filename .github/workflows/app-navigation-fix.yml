@@ -1,0 +1,48 @@
+name: Patch workout navigation
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Inject navigation script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          marker = '<script id="category-navigation-loader" src="./category-navigation.js?v=2"></script>'
+          if marker not in text:
+              needle = '</body>'
+              if needle not in text:
+                  raise SystemExit('Could not find </body> in index.html')
+              text = text.replace(needle, marker + '\n' + needle, 1)
+              p.write_text(text, encoding='utf-8')
+              print('Navigation script injected.')
+          else:
+              print('Navigation script already present.')
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Fix workout page category navigation'
+          git push
