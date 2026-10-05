@@ -21,38 +21,45 @@
   function openCategory(sheet){
     if(!sheet)return;
     selectedCategory=sheet;
-    if(typeof showTab==='function')showTab('premade');
-    filterPremade(sheet);
-    var list=document.getElementById('premadeList');
-    var first=list && Array.prototype.find.call(list.children,function(card){return card.style.display!=='none';});
-    if(first)first.scrollIntoView({behavior:'smooth',block:'start'});
+    if(typeof showTab==='function'){
+      showTab('premade');
+      setTimeout(function(){filterPremade(sheet);},0);
+    }
   }
-
-  window.openWorkoutPage=openCategory;
-  window.selectSheet=openCategory;
 
   function wire(){
     var cats=document.getElementById('cats');
-    if(cats && cats.dataset.categoryNavFix!=='1'){
-      cats.dataset.categoryNavFix='1';
-      cats.addEventListener('click',function(ev){
-        var b=ev.target.closest('button');
-        if(!b)return;
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-        var text=b.textContent.trim();
-        openCategory(text==='Shoulders & Back'?'Shoulders.Back':text);
-      },true);
+    if(cats){
+      Array.prototype.forEach.call(cats.querySelectorAll('button'),function(b){
+        if(b.dataset.categoryNavFix==='1')return;
+        b.dataset.categoryNavFix='1';
+        b.onclick=function(ev){
+          if(ev){ev.preventDefault();ev.stopPropagation();}
+          var text=(b.textContent||'').trim();
+          openCategory(text==='Shoulders & Back'?'Shoulders.Back':text);
+          return false;
+        };
+      });
     }
 
     var select=document.getElementById('premadePageSelect');
     if(select && select.dataset.categoryNavFix!=='1'){
       select.dataset.categoryNavFix='1';
-      select.addEventListener('change',function(ev){
-        ev.stopImmediatePropagation();
-        var handler=select.onchange;
-        if(typeof handler==='function')handler.call(select,ev);
-      },true);
+      select.addEventListener('change',function(){
+        var i=parseInt(select.value,10);
+        if(!Number.isFinite(i))return;
+        var all=typeof allRoutines==='function'?allRoutines():[];
+        var r=all[i];
+        if(!r)return;
+        if(typeof showTab==='function'){
+          window.__categoryNavChanging=true;
+          currentSheet=r.sheet;
+          currentRoutine=r.ri;
+          if(typeof state==='object' && state){state.sheet=r.sheet;state.routine=r.ri;if(typeof save==='function')save();}
+          renderWorkout();
+          window.__categoryNavChanging=false;
+        }
+      });
     }
 
     if(selectedCategory)filterPremade(selectedCategory);
