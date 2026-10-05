@@ -1,5 +1,5 @@
-const CACHE='my-workout-pwa-v11';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt'];
+const CACHE='my-workout-pwa-v12';
+const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
 const FIX=`<script id="category-navigation-fix">(function(){
 function applyCategoryFilter(sheet){
   window.__selectedWorkoutCategory=sheet;
@@ -12,22 +12,21 @@ function applyCategoryFilter(sheet){
     var h=card.querySelector('h3');
     card.style.display=(h&&h.textContent.trim()===wanted)?'block':'none';
   });
-  var visible=Array.prototype.find.call(list.children,function(card){return card.style.display!=='none';});
-  if(visible)visible.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.__applyWorkoutCategory=applyCategoryFilter;
 function wire(){
   var cats=document.getElementById('cats');
-  if(!cats||cats.dataset.categoryFix==='1')return;
-  cats.dataset.categoryFix='1';
-  cats.addEventListener('click',function(ev){
-    var b=ev.target.closest('button');
-    if(!b)return;
-    ev.preventDefault();ev.stopImmediatePropagation();
-    var text=b.textContent.trim();
-    var sheet=text==='Shoulders & Back'?'Shoulders.Back':text;
-    applyCategoryFilter(sheet);
-  },true);
+  if(!cats)return;
+  Array.prototype.forEach.call(cats.querySelectorAll('button'),function(b){
+    if(b.dataset.categoryFix==='1')return;
+    b.dataset.categoryFix='1';
+    b.onclick=function(ev){
+      if(ev){ev.preventDefault();ev.stopPropagation();}
+      var text=(b.textContent||'').trim();
+      applyCategoryFilter(text==='Shoulders & Back'?'Shoulders.Back':text);
+      return false;
+    };
+  });
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
 new MutationObserver(wire).observe(document.documentElement,{childList:true,subtree:true});
