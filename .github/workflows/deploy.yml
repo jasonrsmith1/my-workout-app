@@ -20,6 +20,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Build plain Safari-safe app
+        run: |
+          gzip -t app-20260924.txt
+          gzip -dc app-20260924.txt > index.html
+          test -s index.html
+          grep -qi '<html' index.html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
