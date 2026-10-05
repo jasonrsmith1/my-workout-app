@@ -41,7 +41,7 @@ button{font:inherit}.log{border:0;background:#111827;color:#fff;border-radius:8p
 </div>
 
 <section id="workoutTab"><div class="card">
-<div class="toolbar"><select id="routineSelect"></select><input id="search" placeholder="Filter exercises..."></div>
+<div class="toolbar workout-nav"><label style="font-weight:650;display:flex;align-items:center;gap:8px;flex:1;min-width:240px"><span>Premade Workout</span><select id="premadePageSelect" style="flex:1;min-width:0"></select></label><input id="search" placeholder="Filter exercises..."></div>
 <div id="routine"></div></div></section>
 
 <section id="premadeTab" style="display:none"><div class="card">
@@ -85,16 +85,24 @@ function allRoutines(){
   return out;
 }
 function renderCats(){
-  document.getElementById('cats').innerHTML=DATA.map(g=>`<button class="${g.sheet===currentSheet?'active':''}" onclick="selectSheet(${JSON.stringify(g.sheet)})">${esc(label(g.sheet))}<span class="muted" style="float:right;color:inherit;opacity:.7">${g.routines.length}</span></button>`).join('');
+  document.getElementById('cats').innerHTML=DATA.map(g=>`<button class="${g.sheet===currentSheet?'active':''}" onclick="selectSheet(${JSON.stringify(g.sheet)})">${esc(label(g.sheet))}</button>`).join('');
 }
 function selectSheet(s){currentSheet=s;currentRoutine=0;state.sheet=s;state.routine=0;save();renderWorkout()}
 function renderWorkout(){
   renderCats();
   const g=DATA.find(x=>x.sheet===currentSheet); if(!g)return;
-  const rs=document.getElementById('routineSelect');
-  rs.innerHTML=g.routines.map((r,i)=>`<option value="${i}">${esc(r.name)}</option>`).join('');
-  currentRoutine=Math.min(currentRoutine,g.routines.length-1); rs.value=currentRoutine;
-  rs.onchange=()=>{currentRoutine=+rs.value;state.routine=currentRoutine;save();renderRoutine()};
+  const rs=document.getElementById('premadePageSelect');
+  const all=allRoutines();
+  rs.innerHTML='<option value="">Select a premade workout...</option>'+all.map((r,i)=>`<option value="${i}">${esc(r.name)}</option>`).join('');
+  const currentIndex=all.findIndex(x=>x.sheet===currentSheet&&x.ri===currentRoutine);
+  rs.value=currentIndex>=0?String(currentIndex):'';
+  rs.onchange=()=>{
+    const i=parseInt(rs.value,10);
+    if(!Number.isFinite(i)||!all[i])return;
+    currentSheet=all[i].sheet;currentRoutine=all[i].ri;
+    state.sheet=currentSheet;state.routine=currentRoutine;save();
+    renderWorkout();
+  };
   document.getElementById('search').oninput=renderRoutine;
   renderRoutine();
 }
