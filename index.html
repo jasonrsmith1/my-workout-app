@@ -283,4 +283,84 @@ renderWorkout();renderPremade();renderBuilder();
   addBuildSelected();
 })();
 </script>
+
+<style id="set-selector-fix">
+.rep-scroll{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0 8px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  -webkit-appearance:auto!important;
+  appearance:auto!important;
+  background:#fff!important;
+  color:#111827!important;
+  border:1px solid #d1d5db!important;
+  border-radius:10px!important;
+  font-size:16px!important;
+}
+@media(max-width:700px){
+  .setrow{grid-template-columns:48px minmax(0,1fr) minmax(0,1fr) 44px!important;gap:6px!important;align-items:center!important}
+  .setrow .rep-scroll{grid-column:auto!important}
+}
+</style>
+<script id="set-selector-fix-script">
+(function(){
+  function fixRepSelectors(){
+    document.querySelectorAll('input[id^="rep_"]').forEach(function(old){
+      if(old.tagName==='SELECT' && old.classList.contains('rep-scroll')) return;
+      var s=document.createElement('select');
+      s.id=old.id;
+      s.className='rep-scroll';
+      s.setAttribute('aria-label','Reps Completed');
+      var current=old.value||'';
+      var blank=document.createElement('option');
+      blank.value=''; blank.textContent='Reps';
+      s.appendChild(blank);
+      for(var i=0;i<=40;i++){
+        var o=document.createElement('option');
+        o.value=String(i); o.textContent=String(i);
+        s.appendChild(o);
+      }
+      s.value=current;
+      old.replaceWith(s);
+    });
+  }
+  function run(){fixRepSelectors();}
+  new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+  document.addEventListener('DOMContentLoaded',run);
+  window.addEventListener('load',run);
+  setTimeout(run,50);
+  setTimeout(run,300);
+})();
+</script>
+<script id="move-timer-top">
+(function(){
+  function moveTimer(){
+    var timer=document.getElementById('workoutTimer');
+    if(!timer)return;
+    var main=document.querySelector('main');
+    if(!main)return;
+    var workout=document.getElementById('workoutTab') || document.querySelector('main > section');
+    if(workout && workout.parentElement===main){
+      if(main.firstElementChild!==timer) main.insertBefore(timer,main.firstElementChild);
+    }else if(main.firstElementChild!==timer){
+      main.insertBefore(timer,main.firstElementChild);
+    }
+    timer.style.marginTop='0';
+    timer.style.marginBottom='12px';
+    timer.style.position='relative';
+    timer.style.top='0';
+    timer.style.zIndex='2';
+  }
+  new MutationObserver(moveTimer).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('load',moveTimer);
+  setTimeout(moveTimer,100);
+  setTimeout(moveTimer,500);
+})();
+</script>
 </body></html>
