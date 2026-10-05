@@ -48,22 +48,10 @@
     var select=document.getElementById('premadePageSelect');
     if(select && select.dataset.categoryNavFix!=='1'){
       select.dataset.categoryNavFix='1';
-      select.addEventListener('change',function(){
-        var i=parseInt(select.value,10);
-        if(!Number.isFinite(i))return;
-        var all=typeof allRoutines==='function'?allRoutines():[];
-        var r=all[i];
-        if(!r)return;
-        if(typeof window.__setWorkoutSelection==='function')window.__setWorkoutSelection(r.sheet,r.ri);
-        else if(typeof renderWorkout==='function'){
-          /* The native onchange installed by renderWorkout handles the actual selection. */
-          setTimeout(function(){
-            var current=document.getElementById('premadePageSelect');
-            if(current && current.value!==String(i)){
-              current.value=String(i);
-            }
-          },0);
-        }
+      select.addEventListener('change',function(ev){
+        ev.stopImmediatePropagation();
+        var handler=select.onchange;
+        if(typeof handler==='function')handler.call(select,ev);
       },true);
     }
 
