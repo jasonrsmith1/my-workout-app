@@ -197,4 +197,90 @@ document.getElementById('exerciseSearch').oninput=renderExerciseLibrary;
 document.getElementById('exerciseMuscleFilter').innerHTML='<option value="">All muscle groups</option>'+MUSCLES.map(m=>`<option>${esc(m)}</option>`).join('');
 renderWorkout();renderPremade();renderBuilder();
 </script>
+
+<style id="final-mobile-fix">
+@media(max-width:700px){
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+  body{padding-bottom:env(safe-area-inset-bottom)}
+  button,input,select,textarea{font-size:16px!important;max-width:100%}
+  button{min-height:44px}
+  input,select,textarea{min-height:44px}
+  .wrap{padding:10px;max-width:100%;overflow:hidden}
+  .grid{grid-template-columns:1fr!important}
+  .setrow{grid-template-columns:52px minmax(0,1fr) minmax(0,1fr) 44px!important;gap:6px!important;width:100%;overflow:hidden}
+  .setrow input,.setrow select{min-width:0;width:100%}
+  .routine{width:100%;overflow:hidden}
+  .routine>span.muted,.cats button>span.muted{display:none!important}
+  .toolbar{max-width:100%}
+  .toolbar>*{max-width:100%}
+  #routine>h2{font-size:21px}
+  #routine .card>div:first-child{grid-template-columns:minmax(0,1fr)!important}
+  #routine .card>div:first-child>div{display:inline-block;margin-right:12px}
+  table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+</style>
+<style id="page-title-click">
+#premadeList .card h3.routine-page-title{cursor:pointer;min-height:44px;display:flex;align-items:center}
+#premadeList .card h3.routine-page-title:active{opacity:.65}
+</style>
+<div id="workoutTimer" class="card" style="margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+  <strong>Workout Timer</strong><span id="timerDisplay" style="font-variant-numeric:tabular-nums;font-size:20px">00:00:00</span>
+  <button class="log" id="timerStart">Start</button><button class="tab" id="timerPause">Pause</button><button class="tab" id="timerFinish">Finish</button><button class="tab" id="timerReset">Reset</button>
+</div>
+<script>
+(function(){
+  const timerKey='workout_timer_v1', cardioKey='cardio_history_v1';
+  let elapsed=0, running=false, startedAt=0, tick=null;
+  function fmt(s){s=Math.max(0,Math.floor(s));let h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':')}
+  function draw(){document.getElementById('timerDisplay').textContent=fmt(elapsed+(running?Math.floor((Date.now()-startedAt)/1000):0))}
+  function start(){if(running)return;running=true;startedAt=Date.now();clearInterval(tick);tick=setInterval(draw,500);draw()}
+  function pause(){if(!running)return;elapsed+=Math.floor((Date.now()-startedAt)/1000);running=false;clearInterval(tick);draw()}
+  function reset(){running=false;elapsed=0;clearInterval(tick);draw()}
+  function finish(){pause();if(elapsed>0){let h=JSON.parse(localStorage.getItem(timerKey)||'[]');h.unshift({date:new Date().toLocaleString(),seconds:elapsed});localStorage.setItem(timerKey,JSON.stringify(h).slice(0,200000))}reset()}
+  document.getElementById('timerStart').onclick=start;document.getElementById('timerPause').onclick=pause;document.getElementById('timerFinish').onclick=finish;document.getElementById('timerReset').onclick=reset;draw();
+
+  function ensureCardio(){
+    if(document.getElementById('tabCardio'))return;
+    const tabs=document.querySelector('.tabs');
+    const b=document.createElement('button');b.className='tab';b.id='tabCardio';b.textContent='Cardio';b.onclick=()=>showCardio();
+    tabs.appendChild(b);
+    const main=document.querySelector('main');
+    const sec=document.createElement('section');sec.id='cardioTab';sec.style.display='none';
+    sec.innerHTML='<div class="card"><h2 style="margin-top:0">Cardio</h2><p class="muted">Track cardio type, distance, and time.</p><div class="toolbar"><select id="cardioType"><option>Walking</option><option>Running</option><option>Treadmill</option><option>Cycling</option><option>Stationary Bike</option><option>Elliptical</option><option>Stair Climber</option><option>Rowing</option><option>HIIT</option><option>Other</option></select><input id="cardioOther" placeholder="Type cardio" style="display:none"><input id="cardioDistance" type="number" min="0" step="0.01" placeholder="Distance"><select id="cardioUnit"><option>Miles</option><option>Kilometers</option><option>Steps</option></select><input id="cardioMinutes" type="number" min="0" step="1" placeholder="Time (minutes)"><button class="log" id="saveCardio">Save Cardio</button></div><div id="cardioHistory"></div></div>';
+    main.appendChild(sec);
+    const t=document.getElementById('cardioType'),o=document.getElementById('cardioOther');
+    t.onchange=()=>o.style.display=t.value==='Other'?'block':'none';
+    document.getElementById('saveCardio').onclick=saveCardio;renderCardio();
+  }
+  function getCardio(){try{return JSON.parse(localStorage.getItem(cardioKey)||'[]')}catch(e){return[]}}
+  function saveCardio(){
+    const t=document.getElementById('cardioType'),o=document.getElementById('cardioOther'),d=document.getElementById('cardioDistance'),u=document.getElementById('cardioUnit'),m=document.getElementById('cardioMinutes');
+    if(!d.value&&!m.value)return;
+    const a=getCardio();a.unshift({date:new Date().toLocaleString(),type:t.value==='Other'?(o.value.trim()||'Other'):t.value,distance:d.value,unit:u.value,minutes:m.value});localStorage.setItem(cardioKey,JSON.stringify(a).slice(0,200000));d.value='';m.value='';o.value='';renderCardio();
+  }
+  function renderCardio(){
+    const el=document.getElementById('cardioHistory');if(!el)return;const a=getCardio();
+    el.innerHTML='<h3>Cardio History</h3>'+(a.length?a.slice(0,100).map(x=>'<div class="card" style="padding:10px;margin:6px 0"><b>'+esc(x.type)+'</b> — '+esc(x.distance||'—')+' '+esc(x.unit)+' — '+esc(x.minutes||'0')+' min <span class="muted">'+esc(x.date)+'</span></div>').join(''):'<div class="empty">No cardio sessions logged yet.</div>');
+  }
+  function showCardio(){
+    ensureCardio();
+    ['workout','history','exercises','builder','premade'].forEach(t=>{const x=document.getElementById(t+'Tab');if(x)x.style.display='none';const b=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));if(b)b.classList.remove('active')});
+    document.getElementById('cardioTab').style.display='block';document.getElementById('tabCardio').classList.add('active');renderCardio();
+  }
+  window.showCardio=showCardio;
+  function esc2(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  window.esc=window.esc||esc2;
+
+  const oldRenderRoutine=window.renderRoutine;
+  window.renderRoutine=function(){oldRenderRoutine();document.querySelectorAll('input[id^="rep_"]').forEach(function(old){if(old.tagName==='SELECT')return;const s=document.createElement('select');s.id=old.id;s.className='rep-scroll';s.setAttribute('aria-label','Reps completed');const p=document.createElement('option');p.value='';p.textContent='Reps';s.appendChild(p);for(let i=0;i<=40;i++){const q=document.createElement('option');q.value=i;q.textContent=i;s.appendChild(q)}old.replaceWith(s)})};
+  const oldRenderPremade=window.renderPremade;
+  window.renderPremade=function(){oldRenderPremade();document.querySelectorAll('#premadeList .card').forEach(card=>{const h=card.querySelector('h3');if(h&&!h.dataset.linked){h.dataset.linked='1';h.classList.add('routine-page-title');h.onclick=function(){const b=this.parentElement.querySelector('button.routine');if(b)b.click()}}})};
+  const oldShowTab=window.showTab;
+  window.showTab=function(tab){if(tab!=='cardio'){document.getElementById('cardioTab')?.style.setProperty('display','none');document.getElementById('tabCardio')?.classList.remove('active')}oldShowTab(tab);if(tab==='exercises'){setTimeout(addBuildSelected,0)}};
+  function addBuildSelected(){const bar=document.getElementById('exerciseLibrary')?.previousElementSibling;if(bar&&!document.getElementById('buildSelected')){const b=document.createElement('button');b.className='log';b.id='buildSelected';b.textContent='Build From Selected';b.onclick=()=>{if(typeof buildFromSelected==='function')buildFromSelected()};bar.appendChild(b)}}
+  ensureCardio();
+  addBuildSelected();
+})();
+</script>
 </body></html>
