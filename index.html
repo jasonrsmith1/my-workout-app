@@ -26,6 +26,48 @@ button{font:inherit}.log{border:0;background:#111827;color:#fff;border-radius:8p
 @media(max-width:800px){.grid{grid-template-columns:1fr}.metricgrid{grid-template-columns:repeat(2,1fr)}.builder-row{grid-template-columns:1fr 65px 85px 105px}}
 @media(max-width:560px){.wrap{padding:10px}.setrow{grid-template-columns:45px 1fr 1fr 68px}.setdone{font-size:11px}.metricgrid{grid-template-columns:repeat(2,1fr)}}
 </style>
+
+<style>
+/* IPHONE_SCREEN_FIT_V1 */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-width:0}
+.wrap,.grid,main,.card,#routine,#premadeTab,#workoutTab{min-width:0;max-width:100%;width:100%}
+.card{overflow:hidden}
+.tabs{width:100%;min-width:0}
+.tabs .tab{flex:1 1 auto;min-width:0;white-space:normal}
+.workout-nav{width:100%;min-width:0}
+.workout-nav label{min-width:0!important;width:100%}
+.workout-nav select,.workout-nav input{min-width:0!important;max-width:100%;width:100%}
+.setrow{grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)!important;min-width:0}
+.setrow>*{min-width:0;max-width:100%}
+.setrow input{min-width:0;width:100%;max-width:100%;font-size:16px}
+.setdone{grid-column:1/-1;width:100%;font-size:15px;padding:10px}
+.builder-row{grid-template-columns:minmax(0,1fr) 62px 78px 96px!important}
+.builder-row>*{min-width:0}
+.exercise-item{min-width:0;overflow:hidden}
+.exercise-item>*{min-width:0}
+#exerciseLibrary{min-width:0;max-width:100%;overflow:hidden}
+#freeBuildBarDirect{max-width:100%;overflow:hidden}
+@media (pointer:coarse) and (max-width:1000px){
+  .top{position:relative;padding:12px 14px}
+  .top h1{font-size:20px}
+  .wrap{padding:8px!important}
+  .grid{display:block!important}
+  aside{display:none!important}
+  .tabs{gap:6px;margin-bottom:8px}
+  .tabs .tab{padding:10px 8px;font-size:15px}
+  .card{padding:12px;border-radius:12px}
+  .toolbar{gap:7px}
+  .toolbar label{width:100%!important}
+  .metricgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (pointer:coarse) and (max-width:430px){
+  .top h1{font-size:18px}
+  .tabs .tab{font-size:14px;padding:9px 6px}
+  .setrow{grid-template-columns:42px minmax(0,1fr) minmax(0,1fr)!important}
+  .setrow input{padding:9px 7px}
+}
+</style>
 </head>
 <body>
 <div class="top"><h1>💪 My Workout App</h1><p>Updated directly from 26 WORKOUT APP.xlsx</p></div>
