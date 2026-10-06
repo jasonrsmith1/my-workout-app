@@ -1,4 +1,4 @@
-const CACHE='my-workout-pwa-v15';
+const CACHE='my-workout-pwa-v16';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
 const FIX=`<style id="workout-ui-polish">
 :root{color-scheme:light;--ink:#172033;--muted:#526176;--line:#cbd5e1;--panel:#fff}
@@ -19,25 +19,35 @@ body{background:#eef2f6!important;color:var(--ink)!important;line-height:1.45}
 .exercise-item{border-bottom-color:#cbd5e1!important}
 .empty{color:#526176!important;background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px}
 #builder{overflow-x:auto}
+.free-build-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#eef3f8;border:1px solid #cbd5e1;border-radius:10px}
+.free-build-count{font-weight:700;color:#172033}
 @media(max-width:800px){.grid{grid-template-columns:1fr!important}.wrap{padding:10px!important}.card{padding:13px!important}.top{padding:14px 12px!important}.top h1{font-size:20px!important}.tabs{gap:6px!important}.tab{padding:9px 11px!important}.toolbar{gap:8px!important}.builder-row{grid-template-columns:minmax(150px,1fr) 64px 86px 105px!important}}
 @media(max-width:560px){.tabs{display:grid!important;grid-template-columns:1fr 1fr!important}.tabs .tab{width:100%}.workout-nav label{min-width:100%!important}.workout-nav input{width:100%;min-width:0}.setrow{grid-template-columns:42px minmax(0,1fr) minmax(0,1fr) 62px!important}.setdone{padding:7px 5px!important}.builder-row{grid-template-columns:minmax(145px,1fr) 58px 78px 92px!important;font-size:13px}.builder-row input,.builder-row select{padding:7px!important}.metricgrid{grid-template-columns:1fr 1fr!important}}
-</style><script id="workout-fixes-v15">(function(){
-function applyCategoryFilter(sheet){
- window.__selectedWorkoutCategory=sheet;
- if(typeof showTab==='function')showTab('premade');
- if(typeof renderPremade==='function')renderPremade();
- var wanted=sheet==='Shoulders.Back'?'Shoulders & Back':sheet,list=document.getElementById('premadeList');
- if(!list)return;
- Array.prototype.forEach.call(list.children,function(card){var h=card.querySelector('h3');card.style.display=(h&&h.textContent.trim()===wanted)?'block':'none'});
-}
+</style><script id="workout-fixes-v16">(function(){
+function applyCategoryFilter(sheet){window.__selectedWorkoutCategory=sheet;if(typeof showTab==='function')showTab('premade');if(typeof renderPremade==='function')renderPremade();var wanted=sheet==='Shoulders.Back'?'Shoulders & Back':sheet,list=document.getElementById('premadeList');if(!list)return;Array.prototype.forEach.call(list.children,function(card){var h=card.querySelector('h3');card.style.display=(h&&h.textContent.trim()===wanted)?'block':'none'})}
 window.__applyWorkoutCategory=applyCategoryFilter;
 function wireCats(){var cats=document.getElementById('cats');if(!cats)return;Array.prototype.forEach.call(cats.querySelectorAll('button'),function(b){if(b.dataset.categoryFix==='1')return;b.dataset.categoryFix='1';b.onclick=function(ev){if(ev){ev.preventDefault();ev.stopPropagation()}var t=(b.textContent||'').trim();applyCategoryFilter(t==='Shoulders & Back'?'Shoulders.Back':t);return false}})}
-function init(){wireCats()}
+function selectedCount(){var box=document.getElementById('exerciseLibrary');return box?box.querySelectorAll('input[type="checkbox"]:checked').length:0}
+function buildSelectedNow(){if(typeof buildFromSelected==='function'){buildFromSelected();if(typeof showTab==='function')showTab('builder');setTimeout(function(){var b=document.getElementById('builder');if(b)b.scrollIntoView({behavior:'smooth',block:'start'})},50)}}
+function wireFreeBuild(){
+ var ex=document.getElementById('exercisesTab');if(!ex)return;
+ var toolbar=ex.querySelector('.toolbar');if(toolbar&&!document.getElementById('freeBuildBar')){
+   var bar=document.createElement('div');bar.id='freeBuildBar';bar.className='free-build-bar';
+   bar.innerHTML='<span class="free-build-count" id="freeBuildCount">0 exercises selected</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="log" type="button" id="freeBuildButton">Build Selected</button><button class="tab" type="button" id="freeBuildClear">Clear Selection</button></div>';
+   toolbar.parentNode.insertBefore(bar,toolbar.nextSibling);
+   document.getElementById('freeBuildButton').onclick=buildSelectedNow;
+   document.getElementById('freeBuildClear').onclick=function(){if(typeof clearSelection==='function')clearSelection();updateCount()};
+ }
+ function updateCount(){var n=selectedCount(),c=document.getElementById('freeBuildCount');if(c)c.textContent=n+' exercise'+(n===1?'':'s')+' selected';}
+ ex.addEventListener('change',function(ev){if(ev.target&&ev.target.matches('input[type="checkbox"]'))updateCount()});
+ updateCount();
+}
+function init(){wireCats();wireFreeBuild()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 setTimeout(init,300);setTimeout(init,1000);setTimeout(init,2500);setInterval(init,5000);
-new MutationObserver(function(){wireCats()}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(function(){wireCats();wireFreeBuild()}).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>`;
-function inject(html){return html.includes('workout-fixes-v15')?html:html.replace('</body>',FIX+'</body>')}
+function inject(html){return html.includes('workout-fixes-v16')?html:html.replace('</body>',FIX+'</body>')}
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(CACHE);for(const p of CORE){const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw new Error('Failed to cache '+p);await c.put(p,r)}await self.skipWaiting()})()));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith((async()=>{try{const r=await fetch(e.request,{cache:'no-store'});if(e.request.mode==='navigate'||e.request.destination==='document'){const html=inject(await r.text());const out=new Response(html,{status:r.status,statusText:r.statusText,headers:{'Content-Type':'text/html;charset=UTF-8'}});const c=await caches.open(CACHE);await c.put(e.request,out.clone());return out}const c=await caches.open(CACHE);await c.put(e.request,r.clone());return r}catch(err){return(await caches.match(e.request))||caches.match('./index.html')}})())});
