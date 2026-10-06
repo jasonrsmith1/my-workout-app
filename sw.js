@@ -1,4 +1,4 @@
-const CACHE='my-workout-pwa-v34';
+const CACHE='my-workout-pwa-v35';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
 const FIX=`<style id="workout-summary-v26-css">
 #routine .workout-summary-source-v1{display:block!important;width:100%!important;min-width:0!important}
