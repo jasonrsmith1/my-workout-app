@@ -21,24 +21,21 @@ jobs:
           import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          marker='workout-summary-screenshot-restore-v1'
+          marker='workout-summary-screenshot-restore-v2'
           if marker in s:
               print('Restore already present')
               raise SystemExit(0)
-
-          pattern=re.compile(r'html\+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-source-v1">.*?</div>\n      <div class="setrows">', re.S)
-          replacement='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-screenshot-restore-v1"><div class="workout-restore-name"><strong>${esc(e.exercise)}</strong></div><div class="workout-restore-stats"><div><span class="muted">Sets</span><strong>${esc(e.sets||'1')}</strong></div><div><span class="muted">Reps</span><strong>${esc(e.reps)}</strong></div></div><div class="workout-restore-equipment"><select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div></div>
+          pattern=re.compile(r'html\+=`<div class="card" style="padding:11px;margin:8px 0">.*?</div>\n      <div class="setrows">', re.S)
+          replacement='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-screenshot-restore-v2"><div class="workout-restore-name"><strong>${esc(e.exercise)}</strong></div><div class="workout-restore-stats"><div><span class="muted">Sets</span><strong>${esc(e.sets||'1')}</strong></div><div><span class="muted">Reps</span><strong>${esc(e.reps)}</strong></div></div><div class="workout-restore-equipment"><select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div></div>
       <div class="setrows">'''
           s2,n=pattern.subn(replacement,s,count=1)
           if n!=1:
               raise SystemExit(f'Workout summary source not found; matches={n}')
           s=s2
-
-          css='''\n<style id="workout-summary-screenshot-restore-v1">\n#routine .workout-summary-screenshot-restore-v1{width:100%!important;min-width:0!important}\n#routine .workout-restore-name{width:100%!important;margin:0 0 24px!important}\n#routine .workout-restore-name strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:700!important;overflow-wrap:anywhere!important}\n#routine .workout-restore-stats{display:block!important;width:100%!important}\n#routine .workout-restore-stats>div{display:block!important;margin:0 0 24px!important}\n#routine .workout-restore-stats .muted{display:block!important;color:#6c6c70!important;font-size:14px!important;line-height:1.2!important;margin:0 0 8px!important}\n#routine .workout-restore-stats strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:500!important}\n#routine .workout-restore-equipment{width:100%!important;margin-top:0!important}\n#routine .workout-restore-equipment select{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:7px 10px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:16px!important}\n@media(max-width:600px),(pointer:coarse){\n  #routine .workout-restore-name{margin-bottom:24px!important}\n  #routine .workout-restore-name strong{font-size:17px!important}\n  #routine .workout-restore-stats>div{margin-bottom:24px!important}\n  #routine .workout-restore-stats .muted{font-size:14px!important;margin-bottom:8px!important}\n  #routine .workout-restore-stats strong{font-size:17px!important}\n  #routine .workout-restore-equipment select{min-height:42px!important;font-size:16px!important}\n}\n</style>\n'''
+          css='''\n<style id="workout-summary-screenshot-restore-v2-css">\n#routine .workout-summary-screenshot-restore-v2{width:100%!important;min-width:0!important}\n#routine .workout-restore-name{width:100%!important;margin:0 0 24px!important}\n#routine .workout-restore-name strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:700!important;overflow-wrap:anywhere!important}\n#routine .workout-restore-stats{display:block!important;width:100%!important}\n#routine .workout-restore-stats>div{display:block!important;margin:0 0 24px!important}\n#routine .workout-restore-stats .muted{display:block!important;color:#6c6c70!important;font-size:14px!important;line-height:1.2!important;margin:0 0 8px!important}\n#routine .workout-restore-stats strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:500!important}\n#routine .workout-restore-equipment{width:100%!important;margin-top:0!important}\n#routine .workout-restore-equipment select{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:7px 10px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:16px!important}\n</style>\n'''
           s=s.replace('</head>',css+'</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
-
       - name: Commit and push
         run: |
           git config user.name github-actions[bot]
@@ -46,4 +43,5 @@ jobs:
           git add index.html
           git diff --cached --quiet && exit 0
           git commit -m "Restore workout summary to reference screenshot"
+          git pull --rebase origin main
           git push
