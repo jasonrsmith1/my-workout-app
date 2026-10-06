@@ -26,8 +26,9 @@ jobs:
               print('Restore already present')
               raise SystemExit(0)
 
-          pattern=re.compile(r'html\+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-source-v1">.*?</div>\\n      <div class="setrows">', re.S)
-          replacement='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-screenshot-restore-v1"><div class="workout-restore-name"><strong>${esc(e.exercise)}</strong></div><div class="workout-restore-stats"><div><span class="muted">Sets</span><strong>${esc(e.sets||'1')}</strong></div><div><span class="muted">Reps</span><strong>${esc(e.reps)}</strong></div></div><div class="workout-restore-equipment"><select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div></div>\\n      <div class="setrows">'''
+          pattern=re.compile(r'html\+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-source-v1">.*?</div>\n      <div class="setrows">', re.S)
+          replacement='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-screenshot-restore-v1"><div class="workout-restore-name"><strong>${esc(e.exercise)}</strong></div><div class="workout-restore-stats"><div><span class="muted">Sets</span><strong>${esc(e.sets||'1')}</strong></div><div><span class="muted">Reps</span><strong>${esc(e.reps)}</strong></div></div><div class="workout-restore-equipment"><select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div></div>
+      <div class="setrows">'''
           s2,n=pattern.subn(replacement,s,count=1)
           if n!=1:
               raise SystemExit(f'Workout summary source not found; matches={n}')
