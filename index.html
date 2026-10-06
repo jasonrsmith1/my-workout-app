@@ -546,6 +546,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
 }
 </style>
+
+<style id="workout-summary-source-v1-css">
+.workout-summary-source-v1{width:100%;min-width:0}
+.workout-summary-exercise{width:100%;margin-bottom:7px}
+.workout-summary-exercise strong{display:block;color:#1c1c1e;font-size:17px;line-height:1.2;overflow-wrap:anywhere}
+.workout-summary-inline{display:flex;align-items:center;gap:14px;width:100%;min-width:0;overflow:hidden}
+.workout-summary-pair{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;min-width:0}
+.workout-summary-pair .muted{color:#6c6c70!important;font-size:12px!important;font-weight:600!important}
+.workout-summary-pair strong{color:#1c1c1e!important;font-size:16px!important}
+.workout-summary-equipment{flex:1 1 auto;min-width:0}
+.workout-summary-equipment select{width:auto;min-width:0;max-width:100%;min-height:38px;padding:6px 8px;border:1px solid #c7c7cc;border-radius:10px;background:#f2f2f7;color:#1c1c1e;font-size:14px}
+@media(max-width:560px){
+  .workout-summary-inline{gap:9px}
+  .workout-summary-pair{gap:3px}
+  .workout-summary-pair .muted{font-size:11px!important}
+  .workout-summary-pair strong{font-size:15px!important}
+  .workout-summary-equipment select{font-size:13px;min-height:38px;padding:6px 5px}
+}
+</style>
 </head>
 <body>
 <div class="top"><h1>💪 My Workout App</h1><p>Updated directly from 26 WORKOUT APP.xlsx</p></div>
@@ -646,9 +665,7 @@ function renderRoutine(){
     if(q&&!e.exercise.toLowerCase().includes(q))return;
     if(e.section&&e.section!==last){html+=`<div class="section">${esc(e.section)}</div>`;last=e.section}
     const n=parseInt(e.sets)||1,id=hash(e.exercise);
-    html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-exercise-labels"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Equipment</span></div><div style="display:grid;grid-template-columns:minmax(180px,1fr) 65px 150px 140px;gap:8px;align-items:center">
-      <strong>${esc(e.exercise)}</strong><div>${esc(e.sets||'1')}</div><div>${esc(e.reps)}</div>
-      <select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div>
+    html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-summary-source-v1"><div class="workout-summary-exercise"><strong>${esc(e.exercise)}</strong></div><div class="workout-summary-inline"><span class="workout-summary-pair"><span class="muted">Sets</span> <strong>${esc(e.sets||'1')}</strong></span><span class="workout-summary-pair"><span class="muted">Reps</span> <strong>${esc(e.reps)}</strong></span><span class="workout-summary-pair workout-summary-equipment"><span class="muted">Equipment</span> <select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></span></div></div>
       <div class="setrows">${Array.from({length:n},(_,i)=>`<div class="setrow" id="set_${id}_${i+1}"><b>Set ${i+1}</b><input id="rep_${id}_${i+1}" placeholder="Reps completed"><input id="wt_${id}_${i+1}" placeholder="Weight lifted"><button class="setdone" onclick="logSet(${JSON.stringify(e.exercise)},${JSON.stringify(e.sets)},${JSON.stringify(e.reps)},${i+1})">✓</button></div>`).join('')}</div></div>`;
   });
   document.getElementById('routine').innerHTML=html;
