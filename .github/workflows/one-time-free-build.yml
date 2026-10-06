@@ -1,0 +1,40 @@
+name: Apply free-build UI directly to index
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, 'Apply free-build UI directly to index') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          if 'id="freeBuildBarDirect"' in s:
+              raise SystemExit(0)
+          old = '<div class="toolbar"><input id="exerciseSearch" placeholder="Search every exercise..."><select id="exerciseMuscleFilter"></select><button class="log" onclick="selectAllVisible()">Select Visible</button><button class="tab" onclick="clearSelection()">Clear</button></div>'
+          new = old + '<div id="freeBuildBarDirect" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#eef3f8;border:1px solid #cbd5e1;border-radius:10px"><b id="freeBuildCountDirect">0 exercises selected</b><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="log" type="button" onclick="buildFromSelected();showTab(\'builder\')">Build Selected</button><button class="tab" type="button" onclick="clearSelection();document.getElementById(\'freeBuildCountDirect\').textContent=\'0 exercises selected\'">Clear Selection</button></div></div>'
+          if old not in s:
+              raise SystemExit('exercise toolbar not found')
+          s = s.replace(old, new, 1)
+          updater = "<script>document.addEventListener('change',function(e){if(e.target&&e.target.matches('#exerciseLibrary input[type=\\\"checkbox\\\"]')){var n=document.querySelectorAll('#exerciseLibrary input[type=\\\"checkbox\\\"]:checked').length;var el=document.getElementById('freeBuildCountDirect');if(el)el.textContent=n+' exercise'+(n===1?'':'s')+' selected';}});</script>\n"
+          s = s.replace('<script>\n', updater + '<script>\n', 1)
+          p.write_text(s)
+          PY
+      - name: Commit patched index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Apply free-build UI directly to index"
+          git push
