@@ -1,22 +1,22 @@
-const CACHE='my-workout-pwa-v24';
+const CACHE='my-workout-pwa-v25';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
-const FIX=`<style id="workout-reference-v24-css">
+const FIX=`<style id="workout-reference-v25-css">
 #routine .workout-reference-summary{display:block!important;width:100%!important;min-width:0!important;margin:0!important;padding:0!important}
-#routine .workout-reference-name{display:block!important;width:100%!important;margin:0 0 24px!important}
+#routine .workout-reference-name{display:block!important;width:100%!important;margin:0 0 8px!important}
 #routine .workout-reference-name strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:700!important;overflow-wrap:anywhere!important}
-#routine .workout-reference-stats{display:block!important;width:100%!important}
-#routine .workout-reference-stat{display:block!important;margin:0 0 24px!important}
-#routine .workout-reference-stat .muted{display:block!important;color:#6c6c70!important;font-size:14px!important;line-height:1.2!important;margin:0 0 8px!important}
-#routine .workout-reference-stat strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;font-weight:500!important}
+#routine .workout-reference-stats{display:flex!important;align-items:center!important;gap:12px!important;width:100%!important;min-width:0!important;margin:0 0 8px!important}
+#routine .workout-reference-stat{display:inline-flex!important;align-items:baseline!important;gap:4px!important;margin:0!important;white-space:nowrap!important}
+#routine .workout-reference-stat .muted{display:inline!important;color:#6c6c70!important;font-size:12px!important;line-height:1.2!important;font-weight:600!important;margin:0!important}
+#routine .workout-reference-stat strong{display:inline!important;color:#1c1c1e!important;font-size:16px!important;line-height:1.2!important;font-weight:600!important}
 #routine .workout-reference-equipment{display:block!important;width:100%!important;margin:0!important}
 #routine .workout-reference-equipment .muted{display:none!important}
 #routine .workout-reference-equipment select{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:7px 10px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:16px!important}
-</style><script id="workout-reference-v24-js">(function(){
+</style><script id="workout-reference-v25-js">(function(){
 function fix(){var root=document.getElementById('routine');if(!root)return;root.querySelectorAll('.card').forEach(function(card){if(card.querySelector(':scope > .workout-reference-summary'))return;var rows=card.querySelector(':scope > .setrows');if(!rows)return;var src=card.querySelector(':scope > .workout-summary-source-v1');if(!src)return;var name=src.querySelector('.workout-summary-exercise strong');var set=src.querySelector('.workout-summary-pair:nth-child(1) strong');var rep=src.querySelector('.workout-summary-pair:nth-child(2) strong');var eq=src.querySelector('select[id^="eq_"]');if(!name)return;var wrap=document.createElement('div');wrap.className='workout-reference-summary';var nm=document.createElement('div');nm.className='workout-reference-name';var ns=document.createElement('strong');ns.textContent=name.textContent.trim();nm.appendChild(ns);var stats=document.createElement('div');stats.className='workout-reference-stats';function stat(label,value){var d=document.createElement('div');d.className='workout-reference-stat';var l=document.createElement('span');l.className='muted';l.textContent=label;var v=document.createElement('strong');v.textContent=value||'—';d.append(l,v);return d}stats.append(stat('Sets',set&&set.textContent.trim()),stat('Reps',rep&&rep.textContent.trim()));var ep=document.createElement('div');ep.className='workout-reference-equipment';if(eq)ep.appendChild(eq.cloneNode(true));wrap.append(nm,stats,ep);src.style.display='none';card.insertBefore(wrap,rows)});}
-function hook(){if(typeof window.renderRoutine==='function'&&!window.renderRoutine.__referenceV24){var old=window.renderRoutine;function wrapped(){var r=old.apply(this,arguments);setTimeout(fix,0);return r}wrapped.__referenceV24=true;window.renderRoutine=wrapped}fix()}
+function hook(){if(typeof window.renderRoutine==='function'&&!window.renderRoutine.__referenceV25){var old=window.renderRoutine;function wrapped(){var r=old.apply(this,arguments);setTimeout(fix,0);return r}wrapped.__referenceV25=true;window.renderRoutine=wrapped}fix()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hook);else hook();[50,150,400,900].forEach(function(t){setTimeout(hook,t)});
 })();</script>`;
-function inject(html){return html.includes('workout-reference-v24-js')?html:html.replace('</body>',FIX+'</body>')}
+function inject(html){return html.includes('workout-reference-v25-js')?html:html.replace('</body>',FIX+'</body>')}
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(CACHE);for(const p of CORE){const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw new Error('Failed to cache '+p);await c.put(p,r)}await self.skipWaiting()})()));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith((async()=>{try{const r=await fetch(e.request,{cache:'no-store'});if(e.request.mode==='navigate'||e.request.destination==='document'){const html=inject(await r.text());const out=new Response(html,{status:r.status,statusText:r.statusText,headers:{'Content-Type':'text/html;charset=UTF-8'}});const c=await caches.open(CACHE);await c.put(e.request,out.clone());return out}const c=await caches.open(CACHE);await c.put(e.request,r.clone());return r}catch(err){return(await caches.match(e.request))||caches.match('./index.html')}})())});
