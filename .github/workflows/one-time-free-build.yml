@@ -9,65 +9,51 @@ permissions:
 
 jobs:
   patch:
-    if: ${{ !contains(github.event.head_commit.message, 'Apply free-build UI directly to index') }}
+    if: ${{ !contains(github.event.head_commit.message, 'Fix workout exercise summary row layout') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch index.html
+      - name: Patch workout summary row
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text()
-          ios_css = '''<style id="ios-app-style-v1">
-          :root{--ios-blue:#007aff;--ios-blue-dark:#0062cc;--ios-bg:#f2f2f7;--ios-card:#ffffff;--ios-label:#1c1c1e;--ios-secondary:#6c6c70;--ios-line:#d1d1d6;--ios-fill:#e5e5ea}
-          html{background:var(--ios-bg)!important}
-          body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",sans-serif!important;background:var(--ios-bg)!important;color:var(--ios-label)!important;line-height:1.4!important;-webkit-font-smoothing:antialiased!important}
-          .top{background:rgba(255,255,255,.92)!important;color:var(--ios-label)!important;border-bottom:1px solid rgba(60,60,67,.18)!important;box-shadow:0 1px 0 rgba(60,60,67,.08)!important;padding:14px 18px!important;backdrop-filter:saturate(180%) blur(18px)!important;-webkit-backdrop-filter:saturate(180%) blur(18px)!important}
-          .top h1{font-size:21px!important;font-weight:700!important;letter-spacing:-.2px!important}
-          .top p{color:var(--ios-secondary)!important;font-size:12px!important}
-          .wrap{max-width:1180px!important;padding:14px!important}
-          .card{background:var(--ios-card)!important;border:1px solid rgba(60,60,67,.10)!important;border-radius:16px!important;box-shadow:0 1px 3px rgba(0,0,0,.06),0 5px 18px rgba(0,0,0,.04)!important}
-          .tabs{gap:7px!important}
-          .tabs .tab{border:0!important;background:#e5e5ea!important;color:var(--ios-label)!important;border-radius:11px!important;font-weight:600!important;min-height:42px!important;transition:background .15s ease,transform .1s ease!important}
-          .tabs .tab.active{background:var(--ios-blue)!important;color:#fff!important;box-shadow:0 2px 5px rgba(0,122,255,.22)!important}
-          .tabs .tab:active,.log:active,.cats button:active,.routine:active{transform:scale(.98)!important}
-          .log{background:var(--ios-blue)!important;color:#fff!important;border:0!important;border-radius:11px!important;padding:10px 14px!important;font-weight:600!important;min-height:42px!important;box-shadow:0 2px 5px rgba(0,122,255,.18)!important}
-          .log:hover{background:var(--ios-blue-dark)!important}
-          .tab{border:1px solid var(--ios-line)!important;background:var(--ios-card)!important;color:var(--ios-label)!important;border-radius:11px!important;font-weight:600!important}
-          .toolbar select,.toolbar input,.builder-row select,.builder-row input,.setrow input{background:#f2f2f7!important;color:var(--ios-label)!important;border:1px solid var(--ios-line)!important;border-radius:10px!important;min-height:42px!important;outline:none!important}
-          .toolbar select:focus,.toolbar input:focus,.builder-row select:focus,.builder-row input:focus,.setrow input:focus{border-color:var(--ios-blue)!important;box-shadow:0 0 0 3px rgba(0,122,255,.14)!important}
-          .muted{color:var(--ios-secondary)!important}
-          .section,.exercise-group h3{background:#e5e5ea!important;color:var(--ios-label)!important;border:0!important;border-radius:10px!important}
-          .setrow{background:#f2f2f7!important;border-radius:11px!important}
-          .setrow.completed{background:#dff7e5!important}
-          .setdone{background:#34c759!important;border-radius:9px!important;font-weight:600!important}
-          .metric{background:#f2f2f7!important;border:1px solid rgba(60,60,67,.08)!important;border-radius:12px!important}
-          .progress-table th{background:#e5e5ea!important;color:var(--ios-label)!important}
-          .progress-table td,.progress-table th{border-bottom-color:var(--ios-line)!important}
-          .muscles label{background:#fff!important;color:var(--ios-label)!important;border:1px solid var(--ios-line)!important;border-radius:999px!important}
-          .badge{background:#e8f1ff!important;color:#005ecb!important;font-weight:600!important}
-          .builder-row{border-bottom-color:var(--ios-line)!important}
-          .exercise-item{border-bottom-color:var(--ios-line)!important}
-          .empty{background:#f2f2f7!important;color:var(--ios-secondary)!important;border:1px dashed #b8b8bd!important;border-radius:12px!important}
-          #freeBuildBarDirect{background:#f2f2f7!important;border:1px solid var(--ios-line)!important;border-radius:13px!important}
-          @media (pointer:coarse) and (max-width:1000px){
-            body{padding-bottom:env(safe-area-inset-bottom)!important}
-            .top{padding-top:max(12px,env(safe-area-inset-top))!important}
-            .wrap{padding-left:10px!important;padding-right:10px!important}
-            .card{border-radius:15px!important}
+          old = '''html+=`<div class="card" style="padding:11px;margin:8px 0"><div style="display:grid;grid-template-columns:minmax(180px,1fr) 65px 150px 140px;gap:8px;align-items:center">
+      <strong>${esc(e.exercise)}</strong><div><span class="muted">Sets</span><br>${esc(e.sets||'1')}</div><div><span class="muted">Reps</span><br>${esc(e.reps)}</div>
+      <select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div>
+      <div class="setrows">'''
+          new = '''html+=`<div class="card workout-exercise-card" style="padding:11px;margin:8px 0"><div class="workout-plan-row">
+      <div class="workout-plan-exercise"><span class="workout-plan-label">Exercise</span><strong>${esc(e.exercise)}</strong></div><div class="workout-plan-cell"><span class="workout-plan-label">Sets</span><strong>${esc(e.sets||'1')}</strong></div><div class="workout-plan-cell"><span class="workout-plan-label">Reps</span><strong>${esc(e.reps)}</strong></div>
+      <div class="workout-plan-cell workout-plan-equipment"><span class="workout-plan-label">Equipment</span><select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div></div>
+      <div class="setrows">'''
+          if old not in s:
+              raise SystemExit('Target workout summary markup not found')
+          s = s.replace(old, new, 1)
+          css = '''<style id="workout-summary-row-v6">
+          .workout-plan-row{display:grid;grid-template-columns:minmax(0,1fr) 58px 58px 118px;gap:8px;align-items:center;width:100%;min-width:0}
+          .workout-plan-exercise,.workout-plan-cell{min-width:0}
+          .workout-plan-label{display:block;color:#6c6c70;font-size:12px;font-weight:600;line-height:1.15;margin-bottom:3px}
+          .workout-plan-exercise>strong{display:block;color:#1c1c1e;font-size:17px;line-height:1.2;overflow-wrap:anywhere}
+          .workout-plan-cell>strong{display:block;color:#1c1c1e;font-size:17px;line-height:1.2}
+          .workout-plan-equipment select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:8px 7px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:15px!important}
+          @media(max-width:600px),(pointer:coarse){
+            .workout-plan-row{grid-template-columns:minmax(0,1fr) 42px 48px 82px;gap:4px}
+            .workout-plan-label{font-size:11px;margin-bottom:3px}
+            .workout-plan-exercise>strong{font-size:16px}
+            .workout-plan-cell>strong{font-size:16px;text-align:center}
+            .workout-plan-equipment select{min-height:40px!important;padding:7px 4px!important;font-size:13px!important}
+          }
+          @media(max-width:380px){
+            .workout-plan-row{grid-template-columns:minmax(0,1fr) 40px 46px 76px;gap:3px}
+            .workout-plan-exercise>strong{font-size:15px}
+            .workout-plan-cell>strong{font-size:15px}
+            .workout-plan-equipment select{font-size:12px!important;padding-left:3px!important;padding-right:3px!important}
           }
           </style>
           '''
-          if 'id="ios-app-style-v1"' not in s:
-              s = s.replace('</head>', ios_css + '</head>', 1)
-          if 'id="freeBuildBarDirect"' not in s:
-              old = '<div class="toolbar"><input id="exerciseSearch" placeholder="Search every exercise..."><select id="exerciseMuscleFilter"></select><button class="log" onclick="selectAllVisible()">Select Visible</button><button class="tab" onclick="clearSelection()">Clear</button></div>'
-              new = old + '<div id="freeBuildBarDirect" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#eef3f8;border:1px solid #cbd5e1;border-radius:10px"><b id="freeBuildCountDirect">0 exercises selected</b><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="log" type="button" onclick="buildFromSelected();showTab(\'builder\')">Build Selected</button><button class="tab" type="button" onclick="clearSelection();document.getElementById(\'freeBuildCountDirect\').textContent=\'0 exercises selected\'">Clear Selection</button></div></div>'
-              if old in s:
-                  s = s.replace(old, new, 1)
-                  updater = "<script>document.addEventListener('change',function(e){if(e.target&&e.target.matches('#exerciseLibrary input[type=\\\"checkbox\\\"]')){var n=document.querySelectorAll('#exerciseLibrary input[type=\\\"checkbox\\\"]:checked').length;var el=document.getElementById('freeBuildCountDirect');if(el)el.textContent=n+' exercise'+(n===1?'':'s')+' selected';}});</script>\n"
-                  s = s.replace('<script>\n', updater + '<script>\n', 1)
+          if 'id="workout-summary-row-v6"' not in s:
+              s = s.replace('</head>', css + '</head>', 1)
           p.write_text(s)
           PY
       - name: Commit patched index
@@ -76,5 +62,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Apply free-build UI directly to index"
+          git commit -m "Fix workout exercise summary row layout"
           git push
