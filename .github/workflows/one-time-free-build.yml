@@ -19,15 +19,50 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text()
-          if 'id="freeBuildBarDirect"' in s:
-              raise SystemExit(0)
-          old = '<div class="toolbar"><input id="exerciseSearch" placeholder="Search every exercise..."><select id="exerciseMuscleFilter"></select><button class="log" onclick="selectAllVisible()">Select Visible</button><button class="tab" onclick="clearSelection()">Clear</button></div>'
-          new = old + '<div id="freeBuildBarDirect" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#eef3f8;border:1px solid #cbd5e1;border-radius:10px"><b id="freeBuildCountDirect">0 exercises selected</b><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="log" type="button" onclick="buildFromSelected();showTab(\'builder\')">Build Selected</button><button class="tab" type="button" onclick="clearSelection();document.getElementById(\'freeBuildCountDirect\').textContent=\'0 exercises selected\'">Clear Selection</button></div></div>'
-          if old not in s:
-              raise SystemExit('exercise toolbar not found')
-          s = s.replace(old, new, 1)
-          updater = "<script>document.addEventListener('change',function(e){if(e.target&&e.target.matches('#exerciseLibrary input[type=\\\"checkbox\\\"]')){var n=document.querySelectorAll('#exerciseLibrary input[type=\\\"checkbox\\\"]:checked').length;var el=document.getElementById('freeBuildCountDirect');if(el)el.textContent=n+' exercise'+(n===1?'':'s')+' selected';}});</script>\n"
-          s = s.replace('<script>\n', updater + '<script>\n', 1)
+          css = '''<style id="iphone-fit-v23">
+          html,body{width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%!important}
+          *,*:before,*:after{box-sizing:border-box!important}
+          #workoutTimer{width:100%!important;max-width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;align-items:center!important;gap:8px!important;overflow:hidden!important}
+          #workoutTimer strong,#timerDisplay{min-width:0!important;white-space:nowrap!important}
+          @media(max-width:600px),(pointer:coarse){
+            .wrap,main,.grid,.card,#workoutTab,#routine{width:100%!important;max-width:100%!important;min-width:0!important}
+            .grid{display:block!important}
+            .grid>aside{display:none!important}
+            main{overflow:hidden!important}
+            .card{overflow:hidden!important}
+            .workout-nav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;min-width:0!important}
+            .workout-nav>*{width:100%!important;min-width:0!important;max-width:100%!important}
+            #routine> .card > div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;min-width:0!important;max-width:100%!important;gap:8px!important}
+            #routine> .card > div:first-child>*{min-width:0!important;max-width:100%!important;width:100%!important}
+            .setrow{display:grid!important;grid-template-columns:46px minmax(0,1fr) minmax(0,1fr)!important;width:100%!important;min-width:0!important;max-width:100%!important;gap:6px!important;padding:7px!important}
+            .setrow>*{min-width:0!important;max-width:100%!important}
+            .setrow input{width:100%!important;min-width:0!important;max-width:100%!important;font-size:16px!important}
+            .setdone{grid-column:2/-1!important;width:100%!important;min-width:0!important;max-width:100%!important}
+            #routine h1,#routine h2,#routine h3,#routine p,#routine strong{max-width:100%!important;overflow-wrap:anywhere!important}
+            #workoutTimer{grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;padding:12px!important}
+            #workoutTimer strong{grid-column:1!important;font-size:18px!important}
+            #timerDisplay{grid-column:2!important;font-size:18px!important}
+            #timerStart{grid-column:1!important}
+            #timerPause{grid-column:2!important}
+            #timerFinish,#timerReset{grid-column:1/-1!important;width:100%!important}
+            #workoutTimer button{min-width:0!important;width:100%!important;max-width:100%!important;min-height:44px!important}
+          }
+          @media(max-width:380px){
+            #workoutTimer{grid-template-columns:1fr!important}
+            #workoutTimer strong,#timerDisplay,#timerStart,#timerPause,#timerFinish,#timerReset{grid-column:1!important;width:100%!important}
+            .setrow{grid-template-columns:42px minmax(0,1fr) minmax(0,1fr)!important}
+          }
+          </style>
+          '''
+          if 'id="iphone-fit-v23"' not in s:
+              s = s.replace('</head>', css + '</head>', 1)
+          if 'id="freeBuildBarDirect"' not in s:
+              old = '<div class="toolbar"><input id="exerciseSearch" placeholder="Search every exercise..."><select id="exerciseMuscleFilter"></select><button class="log" onclick="selectAllVisible()">Select Visible</button><button class="tab" onclick="clearSelection()">Clear</button></div>'
+              new = old + '<div id="freeBuildBarDirect" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;background:#eef3f8;border:1px solid #cbd5e1;border-radius:10px"><b id="freeBuildCountDirect">0 exercises selected</b><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="log" type="button" onclick="buildFromSelected();showTab(\'builder\')">Build Selected</button><button class="tab" type="button" onclick="clearSelection();document.getElementById(\'freeBuildCountDirect\').textContent=\'0 exercises selected\'">Clear Selection</button></div></div>'
+              if old in s:
+                  s = s.replace(old, new, 1)
+                  updater = "<script>document.addEventListener('change',function(e){if(e.target&&e.target.matches('#exerciseLibrary input[type=\\\"checkbox\\\"]')){var n=document.querySelectorAll('#exerciseLibrary input[type=\\\"checkbox\\\"]:checked').length;var el=document.getElementById('freeBuildCountDirect');if(el)el.textContent=n+' exercise'+(n===1?'':'s')+' selected';}});</script>\n"
+                  s = s.replace('<script>\n', updater + '<script>\n', 1)
           p.write_text(s)
           PY
       - name: Commit patched index
