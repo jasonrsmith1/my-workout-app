@@ -1,0 +1,59 @@
+name: Direct iOS completion fix
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch app directly
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          html = index.read_text()
+          marker = 'completion-inline-direct-v1'
+          css = '''<style id="completion-inline-direct-v1">
+          /* Direct iOS layout: Set | Weight | Reps | check. This lives in index.html so Safari and Home Screen use it without SW injection. */
+          #routine .setrow{display:grid!important;grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 42px!important;grid-template-rows:1fr!important;align-items:center!important;gap:6px!important;width:100%!important;min-width:0!important;max-width:100%!important;padding:6px 4px!important}
+          #routine .setrow>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+          #routine .setrow>span:first-child,#routine .setrow>label:first-child{grid-column:1!important;grid-row:1!important;align-self:center!important}
+          #routine .setrow input:nth-of-type(1){grid-column:2!important;grid-row:1!important;width:100%!important;min-width:0!important;margin:0!important}
+          #routine .setrow input:nth-of-type(2){grid-column:3!important;grid-row:1!important;width:100%!important;min-width:0!important;margin:0!important}
+          #routine .setrow .setdone{grid-column:4!important;grid-row:1!important;justify-self:end!important;align-self:center!important;width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;margin:0!important;padding:0!important;border:0!important;border-radius:11px!important;background:#30d158!important;color:#fff!important;font-size:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+          #routine .setrow .setdone::after{content:'✓';font-size:20px!important;font-weight:800!important;line-height:1!important}
+          @media(max-width:600px),(pointer:coarse){#routine .setrow{grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 42px!important;gap:6px!important;padding:6px 4px!important}}
+          @media(max-width:380px){#routine .setrow{grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) 40px!important;gap:5px!important}#routine .setrow .setdone{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}}
+          </style>'''
+          if marker not in html:
+              html = html.replace('</head>', css + '\n</head>', 1)
+              index.write_text(html)
+
+          m = Path('manifest.webmanifest')
+          text = m.read_text()
+          import re
+          text = re.sub(r'"id":"\./\?v=\d+"', '"id":"./?v=35"', text, count=1)
+          text = re.sub(r'"start_url":"\./\?v=\d+"', '"start_url":"./?v=35"', text, count=1)
+          m.write_text(text)
+
+          sw = Path('sw.js')
+          s = sw.read_text()
+          s = re.sub(r"const CACHE='[^']+';", "const CACHE='my-workout-pwa-v35';", s, count=1)
+          sw.write_text(s)
+          PY
+      - name: Commit direct fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html manifest.webmanifest sw.js
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Make iOS completion layout direct in app"
+            git push
+          fi
