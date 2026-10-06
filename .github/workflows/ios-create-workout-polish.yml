@@ -15,67 +15,70 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply iOS Create Workout styling
+      - name: Apply final iOS Create Workout layout
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = '<style id="ios-create-workout-v3">'
+          marker = '<style id="ios-create-workout-v4">'
           if marker in s:
-              print('Create Workout iOS v3 already present')
+              print('Create Workout iOS v4 already present')
               raise SystemExit(0)
           css = r'''
-          <style id="ios-create-workout-v3">
-          /* Create Workout — compact, premium iOS controls */
-          #builderTab .card{background:rgba(255,255,255,.97)!important;border:1px solid rgba(60,60,67,.12)!important;border-radius:22px!important;padding:22px!important;box-shadow:0 8px 28px rgba(0,0,0,.05)!important}
-          #builderTab h2{margin:0!important;font-size:28px!important;line-height:1.12!important;letter-spacing:-.7px!important;font-weight:750!important;color:#1c1c1e!important}
-          #builderTab .card>p.muted{margin:7px 0 18px!important;color:#6c6c70!important;font-size:15px!important}
-          #muscleChoices{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin:0 0 16px!important}
-          #muscleChoices label{display:flex!important;align-items:center!important;gap:9px!important;min-height:48px!important;padding:10px 12px!important;border:1px solid #d1d1d6!important;border-radius:14px!important;background:#f9f9fb!important;color:#1c1c1e!important;font-weight:600!important;font-size:15px!important}
-          #muscleChoices label:has(input:checked){background:#eaf3ff!important;border-color:#007aff!important;color:#0062cc!important}
-          #muscleChoices input{width:20px!important;height:20px!important;accent-color:#007aff!important;flex:0 0 auto!important}
-          #builderTab .toolbar{align-items:center!important;gap:8px!important;margin:0 0 10px!important;padding:10px!important;background:#f2f2f7!important;border:1px solid #e5e5ea!important;border-radius:14px!important}
-          #builderTab .toolbar label{display:flex!important;align-items:center!important;gap:8px!important;color:#6c6c70!important;font-size:14px!important;font-weight:600!important}
-          #builderTab .toolbar select,#builderTab .toolbar input{min-height:42px!important;padding:9px 11px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#fff!important;color:#1c1c1e!important;font-size:16px!important}
-          #builderTab .toolbar .log,#builderTab button.log{min-height:42px!important;border:0!important;border-radius:12px!important;padding:9px 15px!important;background:#007aff!important;color:#fff!important;font-weight:700!important}
-          #builderTab .toolbar .tab,#builderTab button.tab{min-height:42px!important;border:1px solid #c7c7cc!important;border-radius:12px!important;padding:9px 14px!important;background:#fff!important;color:#1c1c1e!important;font-weight:650!important}
-          #builderTab .toolbar:nth-of-type(2){background:transparent!important;border:0!important;padding:0!important;margin-top:3px!important}
-          #builderTab #builder{margin-top:16px!important;padding-top:2px!important}
-          #builderTab #builder h3{margin:0 0 5px!important;font-size:21px!important;letter-spacing:-.3px!important;color:#1c1c1e!important}
-          #builderTab #builder>p.muted{margin:0 0 10px!important;color:#6c6c70!important}
-          #builderTab .builder-row{display:grid!important;grid-template-columns:minmax(0,1fr) 68px 86px 118px!important;gap:8px!important;align-items:center!important;padding:11px 0!important;border-bottom:1px solid #e5e5ea!important}
-          #builderTab .builder-row>div:first-child b{display:block!important;font-size:15px!important;line-height:1.25!important;color:#1c1c1e!important}
-          #builderTab .builder-row .muted{margin-top:2px!important;color:#8e8e93!important;font-size:12px!important}
-          #builderTab .builder-row input,#builderTab .builder-row select{min-height:42px!important;padding:8px 9px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f9f9fb!important;color:#1c1c1e!important;font-size:16px!important}
-          #builderTab #builder>div:last-child{margin-top:16px!important;padding-top:2px!important}
-          #builderTab #builder>div:last-child .log{width:100%!important;min-height:50px!important;border-radius:15px!important;background:#007aff!important;font-size:16px!important;font-weight:750!important}
-          /* On iPhone, keep the exercise name, Sets, Reps and Equipment on one compact row. */
+          <style id="ios-create-workout-v4">
+          /* Final Create Workout iPhone layout: Exercise | Sets | Reps | Equipment */
+          #builderTab .card{background:#fff!important;border:1px solid rgba(60,60,67,.12)!important;border-radius:22px!important;box-shadow:0 8px 28px rgba(0,0,0,.05)!important}
+          #builderTab .builder-row{display:grid!important;grid-template-columns:minmax(0,1fr) 68px 82px 118px!important;gap:7px!important;align-items:center!important;width:100%!important;min-width:0!important}
+          #builderTab .builder-row>div:first-child{grid-column:1!important;min-width:0!important}
+          #builderTab .builder-row>input:nth-child(2){grid-column:2!important}
+          #builderTab .builder-row>input:nth-child(3){grid-column:3!important}
+          #builderTab .builder-row>select:nth-child(4){grid-column:4!important}
+          #builderTab .builder-row input,#builderTab .builder-row select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:8px 7px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f9f9fb!important;color:#1c1c1e!important;font-size:16px!important}
+          #builderTab .builder-row>div:first-child b{font-size:14px!important;line-height:1.2!important;overflow-wrap:anywhere!important}
+          #builderTab .builder-row .muted{font-size:11px!important;color:#8e8e93!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
           @media(max-width:600px),(pointer:coarse){
-            #builderTab .card{padding:17px!important;border-radius:20px!important}
+            #builderTab .card{padding:15px!important;border-radius:20px!important}
             #builderTab h2{font-size:26px!important}
             #muscleChoices{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
-            #muscleChoices label{min-height:46px!important;padding:9px!important;font-size:14px!important}
-            #builderTab .toolbar{padding:9px!important}
-            #builderTab .toolbar:nth-of-type(2){display:flex!important;flex-wrap:wrap!important;gap:7px!important}
-            #builderTab .toolbar:nth-of-type(2)>*{flex:1 1 0!important;min-width:0!important}
-            #builderTab .builder-row{grid-template-columns:minmax(0,1fr) 54px 64px 92px!important;gap:5px!important;padding:9px 0!important}
-            #builderTab .builder-row>div:first-child{grid-column:auto!important;min-width:0!important}
-            #builderTab .builder-row>div:first-child b{font-size:13px!important;overflow-wrap:anywhere!important}
-            #builderTab .builder-row .muted{font-size:10px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-            #builderTab .builder-row input,#builderTab .builder-row select{min-height:40px!important;padding:7px 5px!important;font-size:15px!important;width:100%!important;min-width:0!important}
-            #builderTab #builder>div:last-child .log{min-height:50px!important}
+            #muscleChoices label{min-height:44px!important;padding:8px!important;font-size:14px!important}
+            #builderTab .builder-row{grid-template-columns:minmax(0,1fr) 48px 56px 82px!important;gap:4px!important;padding:8px 0!important}
+            #builderTab .builder-row>input:nth-child(2){grid-column:2!important}
+            #builderTab .builder-row>input:nth-child(3){grid-column:3!important}
+            #builderTab .builder-row>select:nth-child(4){grid-column:4!important}
+            #builderTab .builder-row input,#builderTab .builder-row select{min-height:40px!important;padding:7px 4px!important;font-size:14px!important}
+            #builderTab .builder-row>div:first-child b{font-size:12px!important}
+            #builderTab .builder-row .muted{font-size:9px!important}
+            #builderTab .toolbar:nth-of-type(2){display:flex!important;flex-wrap:nowrap!important;gap:6px!important}
+            #builderTab .toolbar:nth-of-type(2)>*{flex:1 1 0!important;min-width:0!important;width:0!important}
           }
           @media(max-width:380px){
-            #builderTab .card{padding:14px!important}
-            #builderTab .builder-row{grid-template-columns:minmax(0,1fr) 50px 60px 82px!important;gap:4px!important}
-            #builderTab .builder-row input,#builderTab .builder-row select{font-size:14px!important;padding-left:4px!important;padding-right:4px!important}
+            #builderTab .card{padding:13px!important}
+            #builderTab .builder-row{grid-template-columns:minmax(0,1fr) 45px 53px 76px!important;gap:3px!important}
+            #builderTab .builder-row input,#builderTab .builder-row select{font-size:13px!important;padding-left:3px!important;padding-right:3px!important}
           }
           </style>
+          <script id="ios-create-workout-label-v1">
+          (function(){
+            function fixReps(root){
+              if(!root)return;
+              var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+              var n;
+              while(n=walker.nextNode()){
+                if(n.nodeValue && n.nodeValue.trim()==='Planned') n.nodeValue='Reps';
+              }
+            }
+            function start(){
+              var b=document.getElementById('builder');
+              if(!b)return;
+              fixReps(b);
+              new MutationObserver(function(){fixReps(b)}).observe(b,{subtree:true,childList:true,characterData:true});
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+          })();
+          </script>
           '''
           s = s.replace('</head>', css + '\n</head>', 1)
-          # Rename any visible builder/runtime label from Planned to Reps without changing data behavior.
-          s = s.replace('>Planned<', '>Reps<').replace('"Planned"', '"Reps"')
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -85,5 +88,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Tighten iOS Create Workout controls"
+          git commit -m "Fix Create Workout iPhone row layout and Reps label"
           git push
