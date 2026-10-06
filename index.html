@@ -412,6 +412,78 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 })();
 </script>
 
+<style id="workout-summary-css-v7">
+.workout-plan-row{display:grid!important;grid-template-columns:minmax(0,1fr) 52px 52px 112px!important;gap:7px!important;align-items:center!important;width:100%!important;min-width:0!important}
+.workout-plan-exercise,.workout-plan-cell{min-width:0!important}
+.workout-plan-label{display:block!important;color:#6c6c70!important;font-size:12px!important;font-weight:600!important;line-height:1.15!important;margin-bottom:3px!important}
+.workout-plan-exercise>strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;overflow-wrap:anywhere!important}
+.workout-plan-cell>strong{display:block!important;color:#1c1c1e!important;font-size:17px!important;line-height:1.2!important;text-align:center!important}
+.workout-plan-equipment select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:8px 6px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:14px!important}
+@media(max-width:600px),(pointer:coarse){
+  .workout-plan-row{grid-template-columns:minmax(0,1fr) 42px 48px 82px!important;gap:4px!important}
+  .workout-plan-label{font-size:11px!important}
+  .workout-plan-exercise>strong{font-size:16px!important}
+  .workout-plan-cell>strong{font-size:16px!important}
+  .workout-plan-equipment select{min-height:40px!important;font-size:13px!important;padding:7px 4px!important}
+}
+@media(max-width:380px){
+  .workout-plan-row{grid-template-columns:minmax(0,1fr) 40px 46px 76px!important;gap:3px!important}
+  .workout-plan-exercise>strong{font-size:15px!important}
+  .workout-plan-cell>strong{font-size:15px!important}
+  .workout-plan-equipment select{font-size:12px!important}
+}
+</style>
+
+<script id="workout-summary-dom-v7">
+(function(){
+  function formatWorkoutPlans(){
+    document.querySelectorAll('#routine .card').forEach(function(card){
+      var row=card.querySelector(':scope > div:first-of-type');
+      if(!row || row.dataset.workoutPlanDone==='1') return;
+      var kids=Array.from(row.children);
+      if(kids.length!==4 || !kids[0].matches('strong') || !kids[1].querySelector('.muted') || !kids[2].querySelector('.muted') || !kids[3].matches('select')) return;
+      row.dataset.workoutPlanDone='1';
+      row.className='workout-plan-row';
+      var exercise=document.createElement('div');
+      exercise.className='workout-plan-exercise';
+      exercise.innerHTML='<span class="workout-plan-label">Exercise</span>';
+      exercise.appendChild(kids[0]);
+      var sets=document.createElement('div');
+      sets.className='workout-plan-cell';
+      sets.innerHTML='<span class="workout-plan-label">Sets</span>';
+      var setsText=kids[1].textContent.replace(/Sets/i,'').trim();
+      sets.insertAdjacentHTML('beforeend','<strong>'+setsText+'</strong>');
+      var reps=document.createElement('div');
+      reps.className='workout-plan-cell';
+      reps.innerHTML='<span class="workout-plan-label">Reps</span>';
+      var repsText=kids[2].textContent.replace(/Reps/i,'').trim();
+      reps.insertAdjacentHTML('beforeend','<strong>'+repsText+'</strong>');
+      var equipment=document.createElement('div');
+      equipment.className='workout-plan-cell workout-plan-equipment';
+      equipment.innerHTML='<span class="workout-plan-label">Equipment</span>';
+      equipment.appendChild(kids[3]);
+      row.replaceChildren(exercise,sets,reps,equipment);
+    });
+  }
+  function hook(){
+    if(typeof window.renderRoutine!=='function') return false;
+    if(window.__workoutSummaryV7Hooked) return true;
+    var original=window.renderRoutine;
+    window.renderRoutine=function(){
+      var result=original.apply(this,arguments);
+      setTimeout(formatWorkoutPlans,0);
+      setTimeout(formatWorkoutPlans,80);
+      return result;
+    };
+    window.__workoutSummaryV7Hooked=true;
+    formatWorkoutPlans();
+    return true;
+  }
+  var tries=0;
+  var timer=setInterval(function(){if(hook()||++tries>100)clearInterval(timer)},50);
+})();
+</script>
+
 </head>
 <body>
 <div class="top"><h1>💪 My Workout App</h1><p>Updated directly from 26 WORKOUT APP.xlsx</p></div>
