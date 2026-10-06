@@ -1,4 +1,4 @@
-const CACHE='my-workout-pwa-v32';
+const CACHE='my-workout-pwa-v34';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
 const FIX=`<style id="workout-summary-v26-css">
 #routine .workout-summary-source-v1{display:block!important;width:100%!important;min-width:0!important}
@@ -30,8 +30,6 @@ button,select,input{font-family:inherit!important;-webkit-appearance:none!import
 .builder-row{padding:12px 0!important;border-bottom-color:#e1e1e6!important}.exercise-item{border-bottom-color:#e1e1e6!important}.empty{color:var(--gym-muted)!important;background:#f8f8fa!important;border:1px dashed #b7b7bf!important;border-radius:14px!important}
 #builder{overflow-x:auto!important}
 input:focus,select:focus,button:focus-visible{outline:3px solid rgba(10,132,255,.18)!important;outline-offset:1px!important;border-color:#0a84ff!important}
-
-/* Force each set to one horizontal row on iPhone: Set | Weight | Reps | Check */
 #routine .setrow{display:grid!important;grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 42px!important;align-items:center!important;gap:6px!important;width:100%!important;min-width:0!important;padding:6px 4px!important}
 #routine .setrow>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
 #routine .setrow>span:first-child,#routine .setrow>label:first-child{grid-column:1!important;grid-row:1!important;align-self:center!important}
