@@ -143,6 +143,45 @@ html,body{width:100%!important;max-width:100%!important;min-width:0!important;ov
   .setrow{grid-template-columns:42px minmax(0,1fr) minmax(0,1fr)!important}
 }
 </style>
+<style id="ios-app-style-v1">
+:root{--ios-blue:#007aff;--ios-blue-dark:#0062cc;--ios-bg:#f2f2f7;--ios-card:#ffffff;--ios-label:#1c1c1e;--ios-secondary:#6c6c70;--ios-line:#d1d1d6;--ios-fill:#e5e5ea}
+html{background:var(--ios-bg)!important}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",sans-serif!important;background:var(--ios-bg)!important;color:var(--ios-label)!important;line-height:1.4!important;-webkit-font-smoothing:antialiased!important}
+.top{background:rgba(255,255,255,.92)!important;color:var(--ios-label)!important;border-bottom:1px solid rgba(60,60,67,.18)!important;box-shadow:0 1px 0 rgba(60,60,67,.08)!important;padding:14px 18px!important;backdrop-filter:saturate(180%) blur(18px)!important;-webkit-backdrop-filter:saturate(180%) blur(18px)!important}
+.top h1{font-size:21px!important;font-weight:700!important;letter-spacing:-.2px!important}
+.top p{color:var(--ios-secondary)!important;font-size:12px!important}
+.wrap{max-width:1180px!important;padding:14px!important}
+.card{background:var(--ios-card)!important;border:1px solid rgba(60,60,67,.10)!important;border-radius:16px!important;box-shadow:0 1px 3px rgba(0,0,0,.06),0 5px 18px rgba(0,0,0,.04)!important}
+.tabs{gap:7px!important}
+.tabs .tab{border:0!important;background:#e5e5ea!important;color:var(--ios-label)!important;border-radius:11px!important;font-weight:600!important;min-height:42px!important;transition:background .15s ease,transform .1s ease!important}
+.tabs .tab.active{background:var(--ios-blue)!important;color:#fff!important;box-shadow:0 2px 5px rgba(0,122,255,.22)!important}
+.tabs .tab:active,.log:active,.cats button:active,.routine:active{transform:scale(.98)!important}
+.log{background:var(--ios-blue)!important;color:#fff!important;border:0!important;border-radius:11px!important;padding:10px 14px!important;font-weight:600!important;min-height:42px!important;box-shadow:0 2px 5px rgba(0,122,255,.18)!important}
+.log:hover{background:var(--ios-blue-dark)!important}
+.tab{border:1px solid var(--ios-line)!important;background:var(--ios-card)!important;color:var(--ios-label)!important;border-radius:11px!important;font-weight:600!important}
+.toolbar select,.toolbar input,.builder-row select,.builder-row input,.setrow input{background:#f2f2f7!important;color:var(--ios-label)!important;border:1px solid var(--ios-line)!important;border-radius:10px!important;min-height:42px!important;outline:none!important}
+.toolbar select:focus,.toolbar input:focus,.builder-row select:focus,.builder-row input:focus,.setrow input:focus{border-color:var(--ios-blue)!important;box-shadow:0 0 0 3px rgba(0,122,255,.14)!important}
+.muted{color:var(--ios-secondary)!important}
+.section,.exercise-group h3{background:#e5e5ea!important;color:var(--ios-label)!important;border:0!important;border-radius:10px!important}
+.setrow{background:#f2f2f7!important;border-radius:11px!important}
+.setrow.completed{background:#dff7e5!important}
+.setdone{background:#34c759!important;border-radius:9px!important;font-weight:600!important}
+.metric{background:#f2f2f7!important;border:1px solid rgba(60,60,67,.08)!important;border-radius:12px!important}
+.progress-table th{background:#e5e5ea!important;color:var(--ios-label)!important}
+.progress-table td,.progress-table th{border-bottom-color:var(--ios-line)!important}
+.muscles label{background:#fff!important;color:var(--ios-label)!important;border:1px solid var(--ios-line)!important;border-radius:999px!important}
+.badge{background:#e8f1ff!important;color:#005ecb!important;font-weight:600!important}
+.builder-row{border-bottom-color:var(--ios-line)!important}
+.exercise-item{border-bottom-color:var(--ios-line)!important}
+.empty{background:#f2f2f7!important;color:var(--ios-secondary)!important;border:1px dashed #b8b8bd!important;border-radius:12px!important}
+#freeBuildBarDirect{background:#f2f2f7!important;border:1px solid var(--ios-line)!important;border-radius:13px!important}
+@media (pointer:coarse) and (max-width:1000px){
+  body{padding-bottom:env(safe-area-inset-bottom)!important}
+  .top{padding-top:max(12px,env(safe-area-inset-top))!important}
+  .wrap{padding-left:10px!important;padding-right:10px!important}
+  .card{border-radius:15px!important}
+}
+</style>
 </head>
 <body>
 <div class="top"><h1>💪 My Workout App</h1><p>Updated directly from 26 WORKOUT APP.xlsx</p></div>
