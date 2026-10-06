@@ -1,6 +1,6 @@
-const CACHE='my-workout-pwa-v20';
+const CACHE='my-workout-pwa-v21';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg','./app-20260924.txt','./category-navigation.js?v=2'];
-const FIX=`<style id="workout-ui-v20">
+const FIX=`<style id="workout-ui-v21">
 :root{color-scheme:light;--ink:#172033;--muted:#526176;--line:#cbd5e1}
 *,*:before,*:after{box-sizing:border-box}
 html,body{width:100%;max-width:100%;overflow-x:hidden}
@@ -21,7 +21,7 @@ body{margin:0;background:#eef2f6!important;color:var(--ink)!important;line-heigh
 .builder-row,.exercise-item{border-bottom-color:var(--line)!important;min-width:0!important}
 #builder,#premadeList,#exerciseLibrary{min-width:0!important;max-width:100%!important;overflow:hidden!important}
 #premadeList>*{min-width:0!important;max-width:100%!important}
-/* Workout exercise summary: exercise on its own line, then Sets / Reps / Equipment side-by-side */
+/* Workout exercise summary: Exercise on top; Sets, Reps, Equipment aligned side-by-side below */
 .workout-plan-row{display:grid!important;grid-template-columns:minmax(0,1fr) 54px minmax(90px,1fr)!important;grid-template-rows:auto auto!important;gap:7px!important;align-items:end!important;width:100%!important;min-width:0!important}
 .workout-plan-exercise{grid-column:1/-1!important;grid-row:1!important;min-width:0!important;width:100%!important}
 .workout-plan-cell:nth-child(2){grid-column:1!important;grid-row:2!important;min-width:0!important}
@@ -62,14 +62,14 @@ body{margin:0;background:#eef2f6!important;color:var(--ink)!important;line-heigh
  .tabs{grid-template-columns:1fr!important}.muscles,.metricgrid{grid-template-columns:1fr!important}.builder-row{grid-template-columns:minmax(0,1fr) 48px 64px!important}
  .workout-plan-row{grid-template-columns:minmax(0,1fr) 43px minmax(76px,1fr)!important;gap:4px!important}.workout-plan-exercise>strong{font-size:15px!important}.workout-plan-cell>strong{font-size:15px!important}.workout-plan-equipment select{font-size:12px!important}
 }
-</style><script id="workout-fixes-v20">(function(){
+</style><script id="workout-fixes-v21">(function(){
 function applyCategoryFilter(sheet){window.__selectedWorkoutCategory=sheet;if(typeof showTab==='function')showTab('premade');if(typeof renderPremade==='function')renderPremade();var wanted=sheet==='Shoulders.Back'?'Shoulders & Back':sheet,list=document.getElementById('premadeList');if(!list)return;Array.prototype.forEach.call(list.children,function(card){var h=card.querySelector('h3');card.style.display=(h&&h.textContent.trim()===wanted)?'block':'none'})}
 function wireCats(){var cats=document.getElementById('cats');if(!cats)return;Array.prototype.forEach.call(cats.querySelectorAll('button'),function(b){if(b.dataset.categoryFix==='1')return;b.dataset.categoryFix='1';b.addEventListener('click',function(ev){ev.preventDefault();ev.stopImmediatePropagation();var t=(b.textContent||'').trim();applyCategoryFilter(t==='Shoulders & Back'?'Shoulders.Back':t)},true)})}
 function init(){try{wireCats()}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 setTimeout(init,500);setTimeout(init,1500);setTimeout(init,3000);setInterval(init,8000);
 })();</script>`;
-function inject(html){return html.includes('workout-fixes-v20')?html:html.replace('</body>',FIX+'</body>')}
+function inject(html){return html.includes('workout-fixes-v21')?html:html.replace('</body>',FIX+'</body>')}
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(CACHE);for(const p of CORE){const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw new Error('Failed to cache '+p);await c.put(p,r)}await self.skipWaiting()})()));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith((async()=>{try{const r=await fetch(e.request,{cache:'no-store'});if(e.request.mode==='navigate'||e.request.destination==='document'){const html=inject(await r.text());const out=new Response(html,{status:r.status,statusText:r.statusText,headers:{'Content-Type':'text/html;charset=UTF-8'}});const c=await caches.open(CACHE);await c.put(e.request,out.clone());return out}const c=await caches.open(CACHE);await c.put(e.request,r.clone());return r}catch(err){return(await caches.match(e.request))||caches.match('./index.html')}})())});
