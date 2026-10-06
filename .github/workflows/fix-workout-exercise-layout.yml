@@ -1,0 +1,80 @@
+name: Fix workout exercise layout
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply exercise summary layout
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<style id="workout-exercise-layout-final">'
+          if marker not in s:
+              css='''<style id="workout-exercise-layout-final">
+          .workout-exercise-summary{display:grid!important;grid-template-columns:minmax(0,1fr) 54px 58px 100px!important;gap:7px!important;align-items:center!important;width:100%!important;min-width:0!important;padding:10px 0!important}
+          .workout-exercise-name{min-width:0!important;font-size:16px!important;font-weight:700!important;color:#1c1c1e!important;overflow-wrap:anywhere!important}
+          .workout-exercise-name .workout-inline-label{display:inline!important;margin-right:5px!important;color:#6c6c70!important;font-size:11px!important;font-weight:600!important}
+          .workout-exercise-cell{min-width:0!important;display:flex!important;align-items:baseline!important;gap:4px!important;white-space:nowrap!important;color:#1c1c1e!important;font-weight:600!important}
+          .workout-inline-label{color:#6c6c70!important;font-size:11px!important;font-weight:600!important;flex:0 0 auto!important}
+          .workout-exercise-equipment select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:40px!important;padding:6px 4px!important;border:1px solid #c7c7cc!important;border-radius:10px!important;background:#f2f2f7!important;color:#1c1c1e!important;font-size:13px!important}
+          @media(max-width:600px),(pointer:coarse){
+            .workout-exercise-summary{grid-template-columns:minmax(0,1fr) 43px 50px 78px!important;gap:4px!important;padding:9px 0!important}
+            .workout-exercise-name{font-size:15px!important}
+            .workout-inline-label{font-size:10px!important}
+            .workout-exercise-equipment select{min-height:40px!important;font-size:12px!important;padding:6px 3px!important}
+          }
+          @media(max-width:380px){.workout-exercise-summary{grid-template-columns:minmax(0,1fr) 40px 47px 74px!important;gap:3px!important}.workout-exercise-name{font-size:14px!important}.workout-exercise-equipment select{font-size:11px!important}}
+          </style>
+          <script id="workout-exercise-layout-final-js">
+          (function(){
+            function fix(){
+              document.querySelectorAll('#routine .card').forEach(function(card){
+                var row=card.querySelector(':scope > div:first-of-type');
+                if(!row || row.dataset.finalLayout==='1') return;
+                var kids=Array.from(row.children);
+                if(kids.length!==4 || !kids[0].matches('strong') || !kids[1].querySelector('.muted') || !kids[2].querySelector('.muted') || !kids[3].matches('select')) return;
+                row.dataset.finalLayout='1';
+                row.className='workout-exercise-summary';
+                var name=document.createElement('div'); name.className='workout-exercise-name';
+                name.innerHTML='<span class="workout-inline-label">Exercise</span>';
+                name.appendChild(kids[0]);
+                var sets=document.createElement('div'); sets.className='workout-exercise-cell';
+                sets.innerHTML='<span class="workout-inline-label">Sets</span><strong>'+kids[1].textContent.replace(/Sets/i,'').trim()+'</strong>';
+                var reps=document.createElement('div'); reps.className='workout-exercise-cell';
+                reps.innerHTML='<span class="workout-inline-label">Reps</span><strong>'+kids[2].textContent.replace(/Reps/i,'').trim()+'</strong>';
+                var eq=document.createElement('div'); eq.className='workout-exercise-cell workout-exercise-equipment';
+                eq.innerHTML='<span class="workout-inline-label">Equipment</span>'; eq.appendChild(kids[3]);
+                row.replaceChildren(name,sets,reps,eq);
+              });
+            }
+            var n=0,t=setInterval(function(){fix();if(++n>100)clearInterval(t)},50);
+            document.addEventListener('click',function(){setTimeout(fix,80);setTimeout(fix,300)},true);
+          })();
+          </script>\n'''
+              s=s.replace('</head>',css+'</head>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix workout exercise summary alignment"
+          git pull --rebase origin main
+          git push origin HEAD:main
