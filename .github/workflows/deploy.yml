@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Deployment refresh for Image 2 branding test
+# Deployment refresh for Image 2 branding test v6
 on:
   push:
     branches:
