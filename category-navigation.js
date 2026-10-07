@@ -65,6 +65,15 @@
     if(selectedCategory)filterPremade(selectedCategory);
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
+  function loadEnhancements(){
+    if(document.getElementById('app-enhancements-loader'))return;
+    var s=document.createElement('script');
+    s.id='app-enhancements-loader';
+    s.src='./app-enhancements.js?v=1';
+    s.async=false;
+    document.body.appendChild(s);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){wire();loadEnhancements();});else{wire();loadEnhancements();}
   new MutationObserver(wire).observe(document.documentElement,{childList:true,subtree:true});
 })();
