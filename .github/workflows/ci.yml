@@ -82,6 +82,8 @@ jobs:
           home = Path('home-redesign.js').read_text(encoding='utf-8')
           home_nav = Path('home-navigation-fix.js').read_text(encoding='utf-8')
           finish = Path('finish-workout-reset.js').read_text(encoding='utf-8')
+          suppress = Path('cardio-history-suppress.js').read_text(encoding='utf-8')
+          settings = Path('settings-panel.js').read_text(encoding='utf-8')
 
           assert 'button-safety-loader' in nav
           assert "setAttribute('type','button')" in safety
@@ -90,13 +92,18 @@ jobs:
           assert 'data-nav="settings"' in home
           assert "settings:'settings'" in home_nav or "tab==='settings'" in home_nav
           assert re.search(r'finish-workout-reset\.js\?v=3', nav)
+          assert re.search(r'cardio-history-suppress\.js\?v=2', nav)
 
           # Finish/reset must never dispatch input/change events because the
           # tracking layer interprets those events as edits and clears saved sets.
           assert 'dispatchEvent(new Event' not in finish
-          assert "state.logs=[]" in Path('settings-panel.js').read_text(encoding='utf-8')
-          assert "localStorage.removeItem('cardio_history_v1')" in Path('settings-panel.js').read_text(encoding='utf-8')
-          assert "localStorage.removeItem('workout_timer_v1')" in Path('settings-panel.js').read_text(encoding='utf-8')
+          assert "state.logs=[]" in settings
+          assert "localStorage.removeItem('cardio_history_v1')" in settings
+          assert "localStorage.removeItem('workout_timer_v1')" in settings
+
+          # Legacy cardio suppression is observer-driven; no perpetual timer.
+          assert 'setInterval(' not in suppress
+          assert 'MutationObserver' in suppress
 
       - name: Check loader uniqueness and cache-busts
         shell: python
