@@ -1,9 +1,9 @@
 name: Polish Create Workout iOS
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,16 +14,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Put workout exercise labels on one line
+
+      - name: Apply idempotent iOS exercise layout polish
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          marker='<style id="workout-exercise-line-v6">'
-          if marker not in s:
-              css=r'''<style id="workout-exercise-line-v6">
-          /* Each workout exercise: Exercise | Sets | Reps | Equipment */
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          marker = '<style id="workout-exercise-line-v7">'
+          css = r'''<style id="workout-exercise-line-v7">
+          /* Stable iPhone layout for Exercise | Sets | Reps | Equipment. */
           #routine .card>div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) 58px 64px 92px!important;gap:6px!important;align-items:center!important;width:100%!important;min-width:0!important}
           #routine .card>div:first-child>strong{font-size:18px!important;line-height:1.2!important;overflow-wrap:anywhere!important;min-width:0!important}
           #routine .card>div:first-child>div{min-width:0!important;color:#1c1c1e!important}
@@ -43,19 +46,32 @@ jobs:
             #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
           }
           </style>'''
-              s=s.replace('</head>',css+'\n</head>',1)
-          old='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div style="display:grid;grid-template-columns:minmax(180px,1fr) 65px 150px 140px;gap:8px;align-items:center">\n      <strong>${esc(e.exercise)}</strong><div><span class="muted">Sets</span><br>${esc(e.sets||'1')}</div><div><span class="muted">Reps</span><br>${esc(e.reps)}</div>\n      <select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div>'''
-          new='''html+=`<div class="card" style="padding:11px;margin:8px 0"><div class="workout-exercise-labels"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Equipment</span></div><div style="display:grid;grid-template-columns:minmax(180px,1fr) 65px 150px 140px;gap:8px;align-items:center">\n      <strong>${esc(e.exercise)}</strong><div>${esc(e.sets||'1')}</div><div>${esc(e.reps)}</div>\n      <select id="eq_${id}"><option>Barbell</option><option>Dumbbells</option><option>Bodyweight</option><option>Cable/Machine</option><option>Kettlebell</option><option>Other</option></select></div>'''
-          if old not in s:
-              raise SystemExit('target renderRoutine block not found')
-          s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
+
+          # Remove prior generated versions so the workflow is self-cleaning.
+          s = re.sub(r'<style id="workout-exercise-line-v[0-9]+">.*?</style>\s*', '', s, flags=re.S)
+          if '</head>' not in s:
+              raise SystemExit('index.html has no </head> marker; refusing to modify it')
+          s = s.replace('</head>', css + '\n</head>', 1)
+
+          # Only add the optional label row when the current render code is known.
+          # Never fail the build because an older renderRoutine block disappeared.
+          if 'workout-exercise-labels' not in s:
+              current = re.compile(r'(html\+=`<div class="card"[^\n]*?)(<div[^>]*>\s*<strong>\$\{esc\(e\.exercise\)\}</strong>)', re.S)
+              s2, n = current.subn(r'\1<div class="workout-exercise-labels"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Equipment</span></div>\2', s, count=1)
+              s = s2 if n else s
+
+          p.write_text(s, encoding='utf-8')
+          print('iOS exercise layout polish applied; renderRoutine source shape is not required.')
           PY
-      - name: Commit and push
+
+      - name: Commit only if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Put workout exercise labels on one line"
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Harden iOS exercise layout polish"
           git push
