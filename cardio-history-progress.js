@@ -1,18 +1,68 @@
 (function(){
   'use strict';
-  if(window.__cardioHistoryProgressV1)return;
-  window.__cardioHistoryProgressV1=true;
-  var KEY='workout_timer_v1';
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function timers(){try{var a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a.filter(function(x){return Number(x.seconds)>0}):[]}catch(e){return[]}}
-  function isCardio(x){var t=String(x.type||'').toLowerCase(),r=String(x.routine||'').toLowerCase();return t.indexOf('cardio')>=0||t.indexOf('hiit')>=0||r.indexOf('cardio')>=0||r.indexOf('hiit')>=0}
+  if(window.__cardioHistoryProgressV2)return;
+  window.__cardioHistoryProgressV2=true;
+
+  var TIMER_KEY='workout_timer_v1', CARDIO_KEY='cardio_history_v1';
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]})}
+  function read(key){try{var a=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+  function timerRows(){return read(TIMER_KEY).filter(function(x){return Number(x.seconds)>0})}
+  function cardioRows(){return read(CARDIO_KEY).filter(function(x){return Number(x.minutes)>0||Number(x.seconds)>0||Number(x.durationMinutes)>0})}
   function stateObj(){try{if(typeof state==='object'&&state){state.logs=Array.isArray(state.logs)?state.logs:[];return state}}catch(e){}return null}
+  function routineName(sheet,ri){try{var g=typeof DATA!=='undefined'&&DATA.find(function(x){return String(x.sheet)===String(sheet)});var r=g&&g.routines&&g.routines[Number(ri)];return r&&r.name?r.name:''}catch(e){return''}}
+  function currentRoutine(){try{var s=stateObj();var sh=(typeof currentSheet!=='undefined'&&currentSheet)||s&&s.sheet;var ri=(typeof currentRoutine!=='undefined'&&currentRoutine)!==undefined?currentRoutine:s&&s.routine;return routineName(sh,ri)||''}catch(e){return''}}
   function saveState(){try{if(typeof save==='function')save()}catch(e){}}
-  function sync(){var s=stateObj();if(!s)return;var changed=false;timers().filter(isCardio).forEach(function(x){var date=x.date||x.timestamp||new Date().toLocaleString(),routine=String(x.routine||'Cardio'),type=String(x.type||'Cardio'),seconds=Number(x.seconds)||0,key=String(date)+'|'+routine+'|'+seconds;var found=s.logs.find(function(l){return l&&l.cardio===true&&String(l.timerKey)===key});if(!found){s.logs.unshift({date:date,sheet:type,routine:routine,exercise:type,sets:'Cardio',reps:'',setNo:1,repsCompleted:'',weight:'',equipment:'',completed:true,cardio:true,cardioType:type,durationSeconds:seconds,timerKey:key});changed=true}});if(changed){s.logs=s.logs.slice(0,2000);saveState()}}
-  function renderCardioHistory(){var h=document.getElementById('history');if(!h)return;var a=timers().filter(isCardio).sort(function(a,b){return new Date(b.date||b.timestamp)-new Date(a.date||a.timestamp)}),box=h.querySelector('.cardio-linked-history');if(!box){box=document.createElement('div');box.className='cardio-linked-history card';h.appendChild(box)}if(!a.length){box.innerHTML='<h3>Cardio in History & Progress</h3><div class="muted">No cardio sessions recorded yet.</div>';return}box.innerHTML='<h3>Cardio in History & Progress</h3><div style="overflow-x:auto"><table class="progress-table"><thead><tr><th>Date</th><th>Cardio</th><th>Workout</th><th>Duration</th></tr></thead><tbody>'+a.slice(0,100).map(function(x){var sec=Math.max(0,Number(x.seconds)||0),m=Math.floor(sec/60),s=sec%60,d=new Date(x.date||x.timestamp),ds=isNaN(d)?String(x.date||''):d.toLocaleString();return '<tr><td>'+esc(ds)+'</td><td>'+esc(x.type||'Cardio')+'</td><td>'+esc(x.routine||'Cardio')+'</td><td>'+m+':'+String(s).padStart(2,'0')+'</td></tr>'}).join('')+'</tbody></table></div>'}
-  function renderCardioProgress(){var candidates=['progress','progressTab','progressTabDirect'];var p=null;for(var i=0;i<candidates.length;i++){p=document.getElementById(candidates[i]);if(p)break}if(!p)return;var a=timers().filter(isCardio),total=a.reduce(function(n,x){return n+(Number(x.seconds)||0)},0),count=a.length,avg=count?Math.round(total/count):0,mins=Math.floor(total/60),avgm=Math.floor(avg/60),avgs=avg%60,box=p.querySelector('.cardio-progress-linked');if(!box){box=document.createElement('div');box.className='cardio-progress-linked card';p.appendChild(box)}box.innerHTML='<h3>Cardio Progress</h3><div class="metricgrid"><div class="metric"><b>'+count+'</b><span>Sessions</span></div><div class="metric"><b>'+mins+'</b><span>Total minutes</span></div><div class="metric"><b>'+avgm+':'+String(avgs).padStart(2,'0')+'</b><span>Average session</span></div></div>'}
-  function refresh(){sync();renderCardioHistory();renderCardioProgress()}
-  var originalSet=localStorage.setItem.bind(localStorage);localStorage.setItem=function(k,v){var r=originalSet(k,v);if(k===KEY)setTimeout(refresh,0);return r};
-  var tries=0,t=setInterval(function(){if(typeof renderHistory==='function'){var o=window.renderHistory;if(!o.__cardioLinkedV1){window.renderHistory=function(){var r=o.apply(this,arguments);setTimeout(refresh,0);return r};window.renderHistory.__cardioLinkedV1=true}refresh();clearInterval(t)}else if(++tries>120)clearInterval(t)},50);
-  setTimeout(refresh,300);
+  function keyFor(kind,x,i){return kind+'|'+String(x.id||x.timestamp||x.date||i)+'|'+String(x.type||x.cardioType||'')+'|'+String(x.routine||'')+'|'+String(x.seconds||x.minutes||0)+'|'+String(x.distance||'')+'|'+String(x.unit||'')}
+  function isCardioTimer(x){var t=String(x.type||'').toLowerCase(),r=String(x.routine||'').toLowerCase();return t.indexOf('cardio')>=0||t.indexOf('hiit')>=0||r.indexOf('cardio')>=0||r.indexOf('hiit')>=0}
+
+  function sync(){
+    var s=stateObj();if(!s)return;
+    var changed=false;
+    var existing={};
+    s.logs.forEach(function(l){if(l&&l.cardioKey)existing[String(l.cardioKey)]=true});
+
+    cardioRows().forEach(function(x,i){
+      var minutes=Number(x.minutes||x.durationMinutes||0),seconds=Number(x.seconds||0)||Math.round(minutes*60);
+      if(seconds<=0)return;
+      var type=String(x.type||x.cardioType||'Cardio'),date=x.date||x.timestamp||new Date().toLocaleString(),routine=String(x.routine||currentRoutine()||'Cardio'),sheet=String(x.sheet||'Cardio'),distance=x.distance==null?'':String(x.distance),unit=String(x.unit||''),key=keyFor('cardio',x,i);
+      if(existing[key])return;
+      s.logs.unshift({date:date,sheet:sheet,routine:routine,exercise:type,sets:Math.round(seconds/60)+' min',reps:'',setNo:1,repsCompleted:Math.round(seconds/60),weight:distance?(distance+' '+unit):'',equipment:'Cardio',completed:true,cardio:true,cardioType:type,durationSeconds:seconds,durationMinutes:Math.round(seconds/60),distance:distance,unit:unit,cardioKey:key});
+      existing[key]=true;changed=true;
+    });
+
+    timerRows().filter(isCardioTimer).forEach(function(x,i){
+      var seconds=Number(x.seconds)||0;if(seconds<=0)return;
+      var type=String(x.type||'Cardio'),date=x.date||x.timestamp||new Date().toLocaleString(),routine=String(x.routine||'Cardio'),sheet=String(x.sheet||'Cardio'),key=keyFor('timer',x,i);
+      if(existing[key])return;
+      s.logs.unshift({date:date,sheet:sheet,routine:routine,exercise:type,sets:Math.round(seconds/60)+' min',reps:'',setNo:1,repsCompleted:Math.round(seconds/60),weight:'',equipment:'Cardio',completed:true,cardio:true,cardioType:type,durationSeconds:seconds,durationMinutes:Math.round(seconds/60),cardioKey:key});
+      existing[key]=true;changed=true;
+    });
+
+    if(changed){s.logs=s.logs.slice(0,2000);saveState();if(typeof renderHistory==='function')setTimeout(renderHistory,0)}
+  }
+
+  function removeOldStandalone(){
+    var h=document.getElementById('history');if(!h)return;
+    Array.prototype.forEach.call(h.querySelectorAll('.cardio-history,.cardio-linked-history'),function(el){el.remove()});
+  }
+
+  function refresh(){sync();removeOldStandalone()}
+
+  var originalSet=localStorage.setItem.bind(localStorage);
+  localStorage.setItem=function(k,v){var r=originalSet(k,v);if(k===TIMER_KEY||k===CARDIO_KEY)setTimeout(refresh,0);return r};
+
+  var tries=0,t=setInterval(function(){
+    if(typeof renderHistory==='function'){
+      var o=window.renderHistory;
+      if(!o.__cardioSharedV2){
+        window.renderHistory=function(){var r=o.apply(this,arguments);setTimeout(refresh,0);return r};
+        window.renderHistory.__cardioSharedV2=true;
+      }
+      refresh();clearInterval(t);
+    }else if(++tries>160)clearInterval(t);
+  },50);
+
+  setTimeout(refresh,250);
+  setTimeout(refresh,1000);
 })();
