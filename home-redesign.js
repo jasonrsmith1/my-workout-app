@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if(window.__homeRedesignV2)return;
-  window.__homeRedesignV2=true;
+  if(window.__homeRedesignV3)return;
+  window.__homeRedesignV3=true;
 
   function icon(type){
     if(type==='workout')return '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 25h8v14h-8zM18 19h7v26h-7zM39 19h7v26h-7zM46 25h8v14h-8zM25 29h14v6H25z" fill="currentColor"/></svg>';
@@ -10,18 +10,38 @@
     return '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M26 8h12l2 7a18 18 0 0 1 5 3l7-2 6 10-5 5a18 18 0 0 1 0 6l5 5-6 10-7-2a18 18 0 0 1-5 3l-2 7H26l-2-7a18 18 0 0 1-5-3l-7 2-6-10 5-5a18 18 0 0 1 0-6l-5-5 6-10 7 2a18 18 0 0 1 5-3z" fill="currentColor"/><circle cx="32" cy="34" r="9" fill="#0b1730"/></svg>';
   }
   function navIcon(type){return type==='home'?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg>':type==='workouts'?icon('workout'):type==='progress'?icon('progress'):icon('settings')}
-  function show(tab){try{if(typeof showTab==='function')showTab(tab)}catch(e){}}
 
+  function setHomeActive(on){
+    document.documentElement.classList.toggle('hr-home-active',!!on);
+    document.body.classList.toggle('hr-home-active',!!on);
+  }
+  function home(){
+    var h=document.getElementById('homeTab');
+    if(!h)return;
+    h.style.display='block';
+    setHomeActive(true);
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(function(){sync()},0);
+  }
+  function navigate(tab){
+    var h=document.getElementById('homeTab');
+    if(tab==='home'){home();return;}
+    if(h)h.style.display='none';
+    setHomeActive(false);
+    try{if(typeof window.showTab==='function')window.showTab(tab)}catch(e){}
+    setTimeout(function(){sync()},0);
+    setTimeout(function(){sync()},100);
+  }
   function styles(){
-    if(document.getElementById('home-redesign-style-v2'))return;
-    var s=document.createElement('style');s.id='home-redesign-style-v2';s.textContent=`
+    if(document.getElementById('home-redesign-style-v3'))return;
+    var s=document.createElement('style');s.id='home-redesign-style-v3';s.textContent=`
 html.hr-home-active,body.hr-home-active{background:#f2f2f7!important}
 body.hr-home-active .top,body.hr-home-active .tabs,body.hr-home-active #workoutTimer{display:none!important}
 body.hr-home-active main> :not(#homeTab){display:none!important}
 body.hr-home-active #homeTab{display:block!important}
 #homeTab.home-redesign{display:block!important;width:100%!important;margin:0!important;padding:0!important}
 #homeTab.home-redesign .hr-shell{margin:0 auto;max-width:1180px;padding:0 12px 96px}
-#homeTab.home-redesign .hr-hero{position:relative;overflow:hidden;min-height:500px;border-radius:24px;background:#06235f url('./home-art.jpg?homeRedesign=2') center center/cover no-repeat;box-shadow:0 14px 40px rgba(0,36,100,.25)}
+#homeTab.home-redesign .hr-hero{position:relative;overflow:hidden;min-height:500px;border-radius:24px;background:#06235f url('./home-art.jpg?homeRedesign=3') center center/cover no-repeat;box-shadow:0 14px 40px rgba(0,36,100,.25)}
 #homeTab.home-redesign .hr-hero:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,18,65,.72),rgba(0,70,130,.20) 52%,rgba(0,25,60,.08)),linear-gradient(180deg,rgba(0,20,65,.08),rgba(0,20,55,.38));pointer-events:none}
 #homeTab.home-redesign .hr-brand{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:22px 24px 0;color:#fff}
 #homeTab.home-redesign .hr-logo{width:58px;height:58px;flex:0 0 58px;border:3px solid #20e5e6;border-radius:50%;display:grid;place-items:center;color:#20e5e6;box-shadow:0 0 18px rgba(32,229,230,.45)}
@@ -38,16 +58,10 @@ body.hr-home-active #homeTab{display:block!important}
 `;
     document.head.appendChild(s);
   }
-
   function markup(){return '<div class="hr-shell"><section class="hr-hero"><div class="hr-brand"><div class="hr-logo"><svg viewBox="0 0 64 64"><path d="M9 28h9v8H9zM18 20h7v24h-7zM39 20h7v24h-7zM46 28h9v8h-9zM25 29h14v6H25z" fill="currentColor"/><path d="M27 32h10" stroke="#55f06c" stroke-width="2"/></svg></div><div><div class="hr-brand-title">MY <span>WORKOUT APP</span></div><div class="hr-tag">TRAIN &nbsp; / &nbsp; TRACK &nbsp; / &nbsp; IMPROVE</div></div></div><div class="hr-copy"><h2>STRONGER<br>HEALTHIER <span>YOU</span></h2><p>REAL WORKOUTS.<br>REAL PROGRESS.</p></div></section><div class="hr-grid"><button class="hr-card" type="button" data-nav="workout"><div class="hr-card-icon">'+icon('workout')+'</div><h3>WORKOUT PAGES</h3><p>Browse by muscle group and find your next workout.</p><span class="hr-card-arrow">›</span></button><button class="hr-card" type="button" data-nav="premade"><div class="hr-card-icon">'+icon('premade')+'</div><h3>PREMADE WORKOUTS</h3><p>Get started with ready-to-go routines.</p><span class="hr-card-arrow">›</span></button><button class="hr-card" type="button" data-nav="history"><div class="hr-card-icon">'+icon('progress')+'</div><h3>HISTORY &amp; PROGRESS</h3><p>Track your workouts and see your progress.</p><span class="hr-card-arrow">›</span></button><button class="hr-card" type="button" data-nav="settings"><div class="hr-card-icon">'+icon('settings')+'</div><h3>SETTINGS</h3><p>Customize your experience and app preferences.</p><span class="hr-card-arrow">›</span></button></div><nav class="hr-bottomnav" aria-label="Main navigation"><button class="hr-navbtn active" type="button" data-nav="home">'+navIcon('home')+'<span>Home</span></button><button class="hr-navbtn" type="button" data-nav="workout">'+navIcon('workouts')+'<span>Workouts</span></button><button class="hr-navbtn" type="button" data-nav="history">'+navIcon('progress')+'<span>Progress</span></button><button class="hr-navbtn" type="button" data-nav="settings">'+navIcon('settings')+'<span>Settings</span></button></nav></div>'}
-
-  function setHomeActive(on){document.documentElement.classList.toggle('hr-home-active',!!on);document.body.classList.toggle('hr-home-active',!!on)}
-  function isHomeVisible(){var h=document.getElementById('homeTab');if(!h)return false;var cs=getComputedStyle(h);return cs.display!=='none' && h.offsetParent!==null}
-  function sync(){styles();setHomeActive(isHomeVisible())}
-  function bind(root){root.querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(){show(b.getAttribute('data-nav'))}})}
-  function hookShowTab(){if(window.__homeShowTabHookV2)return true;if(typeof window.showTab!=='function')return false;var orig=window.showTab;if(orig.__homeWrapped)return true;function wrapped(tab){var r=orig.apply(this,arguments);setTimeout(sync,0);setTimeout(sync,80);return r}wrapped.__homeWrapped=true;window.showTab=wrapped;window.__homeShowTabHookV2=true;return true}
-  function apply(){styles();var h=document.getElementById('homeTab');if(!h){if(typeof ensureHome==='function')try{ensureHome()}catch(e){};h=document.getElementById('homeTab')}if(!h)return false;if(h.dataset.hrApplied!=='2'){h.className='home-redesign';h.innerHTML=markup();h.dataset.hrApplied='2';bind(h)}hookShowTab();sync();return true}
-  function boot(){apply();setTimeout(apply,100);setTimeout(apply,400);setTimeout(apply,1000);setTimeout(function(){hookShowTab();sync()},1500)}
+  function sync(){styles();var h=document.getElementById('homeTab');if(!h)return;var active=h.style.display!=='none';setHomeActive(active)}
+  function bind(root){root.querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(e){e.preventDefault();e.stopPropagation();navigate(b.getAttribute('data-nav'));return false}})}
+  function apply(){styles();var h=document.getElementById('homeTab');if(!h){if(typeof ensureHome==='function')try{ensureHome()}catch(e){};h=document.getElementById('homeTab')}if(!h)return false;if(h.dataset.hrApplied!=='3'){h.className='home-redesign';h.innerHTML=markup();h.dataset.hrApplied='3';bind(h)}h.style.display='block';setHomeActive(true);return true}
+  function boot(){apply();setTimeout(apply,100);setTimeout(apply,400);setTimeout(apply,1000)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-  new MutationObserver(function(){setTimeout(sync,0)}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class','hidden']});
 })();
