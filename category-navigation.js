@@ -91,7 +91,7 @@
     loadScript('workout-tracking-fix-loader','./workout-tracking-fix.js?v=9');
     loadScript('cardio-history-progress-loader','./cardio-history-progress.js?v=6');
     loadScript('history-cardio-fix-loader','./history-cardio-fix.js?v=5');
-    loadScript('cardio-history-suppress-loader','./cardio-history-suppress.js?v=1');
+    loadScript('cardio-history-suppress-loader','./cardio-history-suppress.js?v=2');
     loadScript('cardio-drilldown-loader','./cardio-drilldown.js?v=2');
     loadScript('history-drilldown-loader','./history-drilldown-fix.js?v=2');
     loadScript('finish-workout-reset-loader','./finish-workout-reset.js?v=3');
