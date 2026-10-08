@@ -1,0 +1,75 @@
+name: App Integrity
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=( *.js )
+          test "${#files[@]}" -gt 0
+          for file in "${files[@]}"; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+      - name: Validate local script references
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          html = (root / 'index.html').read_text(encoding='utf-8')
+          refs = set(re.findall(r'<script[^>]+src=[\"\']([^\"\']+)[\"\']', html))
+          # category-navigation.js dynamically loads these files; keep that dependency set explicit.
+          nav = (root / 'category-navigation.js').read_text(encoding='utf-8')
+          refs.update(re.findall(r"loadScript\([^,]+,\s*['\"]\./([^?'\"]+)", nav))
+
+          missing = []
+          for ref in sorted(refs):
+            if ref.startswith(('http://', 'https://', '//', 'data:')):
+              continue
+            path = root / ref
+            if not path.exists():
+              missing.append(ref)
+          if missing:
+            raise SystemExit('Missing local script references: ' + ', '.join(missing))
+
+      - name: Validate required app files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s category-navigation.js
+          test -s home-redesign.js
+          test -s workout-tracking-fix.js
+          test -s cardio-history-progress.js
+          test -s history-cardio-fix.js
+          test -s history-drilldown-fix.js
+          test -s finish-workout-reset.js
+          test -s settings-panel.js
+
+      - name: Check for duplicate workflow mutators
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find .github/workflows -maxdepth 1 -type f -name '*.yml' | wc -l)
+          echo "Workflow count: $count"
+          test "$count" -le 2
