@@ -46,9 +46,11 @@ jobs:
           for ref in sorted(refs):
             if ref.startswith(('http://', 'https://', '//', 'data:')):
               continue
-            path = root / ref
+            # Script tags commonly include cache-busting query strings such as ?v=3.
+            clean_ref = ref.split('?', 1)[0].split('#', 1)[0]
+            path = root / clean_ref.lstrip('./')
             if not path.exists():
-              missing.append(ref)
+              missing.append(clean_ref)
           if missing:
             raise SystemExit('Missing local script references: ' + ', '.join(missing))
 
