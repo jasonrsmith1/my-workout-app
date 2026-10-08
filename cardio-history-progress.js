@@ -1,11 +1,10 @@
 (function(){
   'use strict';
-  if(window.__cardioHistoryProgressV3)return;
-  window.__cardioHistoryProgressV3=true;
+  if(window.__cardioHistoryProgressV4)return;
+  window.__cardioHistoryProgressV4=true;
 
   var TIMER_KEY='workout_timer_v1', CARDIO_KEY='cardio_history_v1';
 
-  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]})}
   function read(key){try{var a=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
   function write(key,a){try{localStorage.setItem(key,JSON.stringify(a).slice(0,200000))}catch(e){}}
   function timerRows(){return read(TIMER_KEY).filter(function(x){return Number(x.seconds)>0})}
@@ -51,7 +50,7 @@
       existing[key]=true;changed=true;
     });
 
-    timerRows().filter(isCardioTimer).forEach(function(x,i){
+    timerRows().filter(function(x){return isCardioTimer(x)&&!x.cardioSourceKey}).forEach(function(x,i){
       var seconds=Number(x.seconds)||0;if(seconds<=0)return;
       var type=String(x.type||'Cardio'),date=x.date||x.timestamp||new Date().toLocaleString(),routine=String(x.routine||'Cardio'),sheet=String(x.sheet||'Cardio'),key=keyFor('timer',x,i);
       if(existing[key])return;
@@ -70,23 +69,23 @@
   function refresh(){enrichLatestCardio();syncAnalytics();syncHistory();removeOldStandalone();if(typeof renderHistory==='function')setTimeout(renderHistory,0)}
 
   var originalSet=localStorage.setItem.bind(localStorage);
-  if(!window.__cardioStorageHookV3){
-    window.__cardioStorageHookV3=true;
+  if(!window.__cardioStorageHookV4){
+    window.__cardioStorageHookV4=true;
     localStorage.setItem=function(k,v){var r=originalSet(k,v);if(k===TIMER_KEY||k===CARDIO_KEY)setTimeout(refresh,0);return r};
   }
 
   var cardioSaveTries=0,cardioSaveTimer=setInterval(function(){
     var b=document.getElementById('saveCardio');
-    if(b&&!b.__cardioMetaV3){b.__cardioMetaV3=true;b.addEventListener('click',function(){setTimeout(enrichLatestCardio,0)},false);clearInterval(cardioSaveTimer)}
+    if(b&&!b.__cardioMetaV4){b.__cardioMetaV4=true;b.addEventListener('click',function(){setTimeout(enrichLatestCardio,0)},false);clearInterval(cardioSaveTimer)}
     else if(++cardioSaveTries>160)clearInterval(cardioSaveTimer);
   },50);
 
   var tries=0,t=setInterval(function(){
     if(typeof renderHistory==='function'){
       var o=window.renderHistory;
-      if(!o.__cardioSharedV3){
+      if(!o.__cardioSharedV4){
         window.renderHistory=function(){var r=o.apply(this,arguments);setTimeout(refresh,0);return r};
-        window.renderHistory.__cardioSharedV3=true;
+        window.renderHistory.__cardioSharedV4=true;
       }
       refresh();clearInterval(t);
     }else if(++tries>160)clearInterval(t);
