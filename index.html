@@ -525,28 +525,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   document.addEventListener('click',function(){setTimeout(fix,80);setTimeout(fix,300)},true);
 })();
 </script>
-<style id="workout-exercise-line-v6">
-/* Each workout exercise: Exercise | Sets | Reps | Equipment */
-#routine .card>div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) 58px 64px 92px!important;gap:6px!important;align-items:center!important;width:100%!important;min-width:0!important}
-#routine .card>div:first-child>strong{font-size:18px!important;line-height:1.2!important;overflow-wrap:anywhere!important;min-width:0!important}
-#routine .card>div:first-child>div{min-width:0!important;color:#1c1c1e!important}
-#routine .card>div:first-child>div .muted{font-size:12px!important;color:#6c6c70!important}
-#routine .card>div:first-child>select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:7px 5px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f9f9fb!important;color:#1c1c1e!important;font-size:14px!important}
-#routine .workout-exercise-labels{display:grid!important;grid-template-columns:minmax(0,1fr) 58px 64px 92px!important;gap:6px!important;align-items:end!important;margin-bottom:4px!important;padding:0 4px!important;color:#6c6c70!important;font-size:12px!important;font-weight:650!important}
-#routine .workout-exercise-labels span:not(:first-child){text-align:center!important}
-@media(max-width:600px),(pointer:coarse){
-  #routine .card>div:first-child{grid-template-columns:minmax(0,1fr) 48px 54px 78px!important;gap:4px!important}
-  #routine .card>div:first-child>strong{font-size:17px!important}
-  #routine .card>div:first-child>div .muted{font-size:11px!important}
-  #routine .card>div:first-child>select{min-height:40px!important;font-size:13px!important}
-  #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 48px 54px 78px!important;gap:4px!important;font-size:11px!important}
-}
-@media(max-width:380px){
-  #routine .card>div:first-child{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
-  #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
-}
-</style>
-
 <style id="workout-summary-source-v1-css">
 .workout-summary-source-v1{width:100%;min-width:0}
 .workout-summary-exercise{width:100%;margin-bottom:7px}
@@ -576,6 +554,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 #routine .setrow .setdone::after{content:'✓';font-size:20px!important;font-weight:800!important;line-height:1!important}
 @media(max-width:600px),(pointer:coarse){#routine .setrow{grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 42px!important;gap:6px!important;padding:6px 4px!important}}
 @media(max-width:380px){#routine .setrow{grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) 40px!important;gap:5px!important}#routine .setrow .setdone{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}}
+</style>
+<style id="workout-exercise-line-v7">
+/* Stable iPhone layout for Exercise | Sets | Reps | Equipment. */
+#routine .card>div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) 58px 64px 92px!important;gap:6px!important;align-items:center!important;width:100%!important;min-width:0!important}
+#routine .card>div:first-child>strong{font-size:18px!important;line-height:1.2!important;overflow-wrap:anywhere!important;min-width:0!important}
+#routine .card>div:first-child>div{min-width:0!important;color:#1c1c1e!important}
+#routine .card>div:first-child>div .muted{font-size:12px!important;color:#6c6c70!important}
+#routine .card>div:first-child>select{width:100%!important;min-width:0!important;max-width:100%!important;min-height:42px!important;padding:7px 5px!important;border:1px solid #c7c7cc!important;border-radius:11px!important;background:#f9f9fb!important;color:#1c1c1e!important;font-size:14px!important}
+#routine .workout-exercise-labels{display:grid!important;grid-template-columns:minmax(0,1fr) 58px 64px 92px!important;gap:6px!important;align-items:end!important;margin-bottom:4px!important;padding:0 4px!important;color:#6c6c70!important;font-size:12px!important;font-weight:650!important}
+#routine .workout-exercise-labels span:not(:first-child){text-align:center!important}
+@media(max-width:600px),(pointer:coarse){
+  #routine .card>div:first-child{grid-template-columns:minmax(0,1fr) 48px 54px 78px!important;gap:4px!important}
+  #routine .card>div:first-child>strong{font-size:17px!important}
+  #routine .card>div:first-child>div .muted{font-size:11px!important}
+  #routine .card>div:first-child>select{min-height:40px!important;font-size:13px!important}
+  #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 48px 54px 78px!important;gap:4px!important;font-size:11px!important}
+}
+@media(max-width:380px){
+  #routine .card>div:first-child{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
+  #routine .workout-exercise-labels{grid-template-columns:minmax(0,1fr) 44px 50px 72px!important;gap:3px!important}
+}
 </style>
 </head>
 <body>
