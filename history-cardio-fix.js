@@ -1,11 +1,10 @@
 (function(){
   'use strict';
-  if(window.__historyCardioFixV1)return;
-  window.__historyCardioFixV1=true;
+  if(window.__historyCardioFixV2)return;
+  window.__historyCardioFixV2=true;
 
   var TIMER_KEY='workout_timer_v1',CARDIO_KEY='cardio_history_v1';
   function read(k){try{var a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
-  function write(k,a){try{localStorage.setItem(k,JSON.stringify(a).slice(0,200000))}catch(e){}}
   function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]})}
   function cardioLog(l){return !!(l&&l.cardio===true)}
 
@@ -37,14 +36,27 @@
     try{return (state.logs||[]).filter(cardioLog).map(function(x){return {date:x.date||'',routine:x.routine||'Cardio',type:x.cardioType||x.exercise||'Cardio',seconds:Number(x.durationSeconds)||Number(x.durationMinutes||0)*60,distance:x.distance||'',unit:x.unit||''}})}catch(e){return[]}
   }
 
+  function removeOldCardioBlocks(h){
+    if(!h)return;
+    Array.prototype.forEach.call(h.querySelectorAll('.cardio-history,.cardio-linked-history,.cardio-progress-linked,.cardio-history-fixed'),function(el){el.remove()});
+    Array.prototype.forEach.call(h.querySelectorAll('h1,h2,h3,h4,h5,h6'),function(head){
+      var text=(head.textContent||'').trim().toLowerCase();
+      if(text!=='cardio history'&&text!=='cardio sessions')return;
+      var el=head.closest('.card');
+      if(!el)el=head.closest('section');
+      if(!el)el=head.parentElement;
+      if(el&&el!==h)el.remove();
+    });
+  }
+
   function renderCardioBlock(h){
     if(!h)return;
-    Array.prototype.forEach.call(h.querySelectorAll('.cardio-history,.cardio-linked-history,.cardio-progress-linked'),function(el){el.remove()});
+    removeOldCardioBlocks(h);
     var a=cardioItems();
     if(!a.length)a=cardioFromLogs();
     var box=document.createElement('div');box.className='card cardio-history-fixed';
     var rows=a.map(function(x){var sec=Number(x.seconds||0)||Math.round(Number(x.minutes||x.durationMinutes||0)*60),d=new Date(x.date||x.timestamp),ds=isNaN(d)?String(x.date||''):d.toLocaleString(),m=Math.floor(sec/60),s=sec%60,dist=x.distance==null||x.distance===''?'—':String(x.distance)+(x.unit?' '+x.unit:'');return '<tr><td>'+esc(ds)+'</td><td>'+esc(x.routine||'Cardio')+'</td><td>'+esc(x.type||x.cardioType||'Cardio')+'</td><td>'+m+':'+String(s).padStart(2,'0')+'</td><td>'+esc(dist)+'</td></tr>'}).join('');
-    box.innerHTML='<h3>Cardio Sessions</h3>'+(rows?'<div class="cardio-table-wrap"><table class="progress-table cardio-table"><thead><tr><th>Date</th><th>Routine</th><th>Cardio</th><th>Duration</th><th>Distance</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="muted">No cardio sessions recorded yet.</div>');
+    box.innerHTML='<h3>Cardio History</h3>'+(rows?'<div class="cardio-table-wrap"><table class="progress-table cardio-table"><thead><tr><th>Date</th><th>Routine</th><th>Cardio</th><th>Duration</th><th>Distance</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="muted">No cardio sessions recorded yet.</div>');
     h.appendChild(box);
   }
 
@@ -93,8 +105,7 @@
         if(typeof state==='object'&&state&&Array.isArray(state.logs)){savedLogs=state.logs;state.logs=state.logs.filter(function(l){return !cardioLog(l)});}
         var result=original.apply(this,arguments);
         if(savedLogs&&typeof state==='object'&&state)state.logs=savedLogs;
-        var h=document.getElementById('history');
-        renderCardioBlock(h);
+        renderCardioBlock(document.getElementById('history'));
         return result;
       }catch(e){if(savedLogs&&typeof state==='object'&&state)state.logs=savedLogs;throw e}
     };
@@ -102,11 +113,11 @@
     return true;
   }
 
-  function refresh(){style();cleanCardioLogs();if(wrapHistory()&&document.getElementById('history')){var h=document.getElementById('history');if(h.innerHTML)renderCardioBlock(h)}}
+  function refresh(){style();cleanCardioLogs();if(wrapHistory()&&document.getElementById('history'))renderCardioBlock(document.getElementById('history'))}
   style();
   var tries=0,t=setInterval(function(){if(wrapHistory()){clearInterval(t);refresh()}else if(++tries>160)clearInterval(t)},50);
   window.addEventListener('load',refresh);
   setTimeout(refresh,500);
   var oldSet=localStorage.setItem.bind(localStorage);
-  if(!window.__historyCardioStorageV1){window.__historyCardioStorageV1=true;localStorage.setItem=function(k,v){var r=oldSet(k,v);if(k===CARDIO_KEY||k===TIMER_KEY)setTimeout(function(){if(document.getElementById('history')&&document.getElementById('history').offsetParent!==null&&typeof window.renderHistory==='function')window.renderHistory()},50);return r}}
+  if(!window.__historyCardioStorageV2){window.__historyCardioStorageV2=true;localStorage.setItem=function(k,v){var r=oldSet(k,v);if(k===CARDIO_KEY||k===TIMER_KEY)setTimeout(function(){if(document.getElementById('history')&&document.getElementById('history').offsetParent!==null&&typeof window.renderHistory==='function')window.renderHistory()},50);return r}}
 })();
