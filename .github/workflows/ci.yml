@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate JavaScript syntax
         shell: bash
@@ -38,7 +38,6 @@ jobs:
           root = Path('.')
           html = (root / 'index.html').read_text(encoding='utf-8')
           refs = set(re.findall(r'<script[^>]+src=[\"\']([^\"\']+)[\"\']', html))
-          # category-navigation.js dynamically loads these files; keep that dependency set explicit.
           nav = (root / 'category-navigation.js').read_text(encoding='utf-8')
           refs.update(re.findall(r"loadScript\([^,]+,\s*['\"]\./([^?'\"]+)", nav))
 
@@ -46,7 +45,6 @@ jobs:
           for ref in sorted(refs):
             if ref.startswith(('http://', 'https://', '//', 'data:')):
               continue
-            # Script tags commonly include cache-busting query strings such as ?v=3.
             clean_ref = ref.split('?', 1)[0].split('#', 1)[0]
             path = root / clean_ref.lstrip('./')
             if not path.exists():
@@ -58,15 +56,36 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s index.html
-          test -s category-navigation.js
-          test -s home-redesign.js
-          test -s workout-tracking-fix.js
-          test -s cardio-history-progress.js
-          test -s history-cardio-fix.js
-          test -s history-drilldown-fix.js
-          test -s finish-workout-reset.js
-          test -s settings-panel.js
+          for file in \
+            index.html \
+            category-navigation.js \
+            button-safety.js \
+            home-redesign.js \
+            workout-tracking-fix.js \
+            cardio-history-progress.js \
+            history-cardio-fix.js \
+            history-drilldown-fix.js \
+            finish-workout-reset.js \
+            settings-panel.js; do
+            test -s "$file"
+          done
+
+      - name: Check button/navigation invariants
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          nav = Path('category-navigation.js').read_text(encoding='utf-8')
+          safety = Path('button-safety.js').read_text(encoding='utf-8')
+
+          assert 'button-safety-loader' in nav
+          assert "setAttribute('type','button')" in safety
+          assert 'data-nav="workout"' in html or 'data-nav=\'workout\'' in html or 'data-nav="workout"' in Path('home-redesign.js').read_text(encoding='utf-8')
+          assert 'data-nav="history"' in Path('home-redesign.js').read_text(encoding='utf-8')
+          assert 'data-nav="settings"' in Path('home-redesign.js').read_text(encoding='utf-8')
+          assert re.search(r'finish-workout-reset\.js\?v=3', nav)
 
       - name: Check for duplicate workflow mutators
         shell: bash
