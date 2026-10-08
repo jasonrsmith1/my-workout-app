@@ -61,6 +61,7 @@ jobs:
             category-navigation.js \
             button-safety.js \
             home-redesign.js \
+            home-navigation-fix.js \
             workout-tracking-fix.js \
             cardio-history-progress.js \
             history-cardio-fix.js \
@@ -70,22 +71,46 @@ jobs:
             test -s "$file"
           done
 
-      - name: Check button/navigation invariants
+      - name: Check button and navigation invariants
         shell: python
         run: |
           from pathlib import Path
           import re
 
-          html = Path('index.html').read_text(encoding='utf-8')
           nav = Path('category-navigation.js').read_text(encoding='utf-8')
           safety = Path('button-safety.js').read_text(encoding='utf-8')
+          home = Path('home-redesign.js').read_text(encoding='utf-8')
+          home_nav = Path('home-navigation-fix.js').read_text(encoding='utf-8')
+          finish = Path('finish-workout-reset.js').read_text(encoding='utf-8')
 
           assert 'button-safety-loader' in nav
           assert "setAttribute('type','button')" in safety
-          assert 'data-nav="workout"' in html or 'data-nav=\'workout\'' in html or 'data-nav="workout"' in Path('home-redesign.js').read_text(encoding='utf-8')
-          assert 'data-nav="history"' in Path('home-redesign.js').read_text(encoding='utf-8')
-          assert 'data-nav="settings"' in Path('home-redesign.js').read_text(encoding='utf-8')
+          assert 'data-nav="workout"' in home
+          assert 'data-nav="history"' in home
+          assert 'data-nav="settings"' in home
+          assert "settings:'settings'" in home_nav or "tab==='settings'" in home_nav
           assert re.search(r'finish-workout-reset\.js\?v=3', nav)
+
+          # Finish/reset must never dispatch input/change events because the
+          # tracking layer interprets those events as edits and clears saved sets.
+          assert 'dispatchEvent(new Event' not in finish
+          assert "state.logs=[]" in Path('settings-panel.js').read_text(encoding='utf-8')
+          assert "localStorage.removeItem('cardio_history_v1')" in Path('settings-panel.js').read_text(encoding='utf-8')
+          assert "localStorage.removeItem('workout_timer_v1')" in Path('settings-panel.js').read_text(encoding='utf-8')
+
+      - name: Check loader uniqueness and cache-busts
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          nav = Path('category-navigation.js').read_text(encoding='utf-8')
+          pairs = re.findall(r"loadScript\(['\"]([^'\"]+)['\"],['\"]([^'\"]+)['\"]\)", nav)
+          ids = [x[0] for x in pairs]
+          assert len(ids) == len(set(ids)), 'Duplicate loader IDs found'
+          for loader_id, src in pairs:
+            assert '?v=' in src, f'Missing cache-bust on {loader_id}'
+          print(f'Validated {len(pairs)} dynamic script loaders')
 
       - name: Check for duplicate workflow mutators
         shell: bash
