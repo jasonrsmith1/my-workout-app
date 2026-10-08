@@ -1,0 +1,112 @@
+(function(){
+  'use strict';
+  if(window.__historyCardioFixV1)return;
+  window.__historyCardioFixV1=true;
+
+  var TIMER_KEY='workout_timer_v1',CARDIO_KEY='cardio_history_v1';
+  function read(k){try{var a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+  function write(k,a){try{localStorage.setItem(k,JSON.stringify(a).slice(0,200000))}catch(e){}}
+  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]})}
+  function cardioLog(l){return !!(l&&l.cardio===true)}
+
+  function cleanCardioLogs(){
+    try{
+      if(typeof state!=='object'||!state||!Array.isArray(state.logs))return false;
+      var changed=false;
+      state.logs.forEach(function(l){
+        if(!cardioLog(l))return;
+        if(l.weight!==''){l.weight='';changed=true}
+        if(l.volume!=null){delete l.volume;changed=true}
+        if(l.bestWeight!=null){delete l.bestWeight;changed=true}
+        if(l.repsCompleted!==''){l.repsCompleted='';changed=true}
+        if(l.sets && /min$/i.test(String(l.sets))===false && Number(l.durationMinutes)>0){l.sets=Math.round(Number(l.durationMinutes))+' min';changed=true}
+      });
+      if(changed&&typeof save==='function')save();
+      return changed;
+    }catch(e){return false}
+  }
+
+  function cardioItems(){
+    var a=read(CARDIO_KEY).filter(function(x){return Number(x.seconds||0)>0||Number(x.minutes||x.durationMinutes||0)>0});
+    var seen={};
+    a.forEach(function(x,i){x.__k=String(x.id||x.timestamp||x.date||i)+'|'+String(x.type||x.cardioType||'')+'|'+String(x.routine||'')+'|'+String(x.seconds||x.minutes||x.durationMinutes||0)+'|'+String(x.distance||'')});
+    return a.filter(function(x){if(seen[x.__k])return false;seen[x.__k]=true;return true}).slice(0,100);
+  }
+
+  function cardioFromLogs(){
+    try{return (state.logs||[]).filter(cardioLog).map(function(x){return {date:x.date||'',routine:x.routine||'Cardio',type:x.cardioType||x.exercise||'Cardio',seconds:Number(x.durationSeconds)||Number(x.durationMinutes||0)*60,distance:x.distance||'',unit:x.unit||''}})}catch(e){return[]}
+  }
+
+  function renderCardioBlock(h){
+    if(!h)return;
+    Array.prototype.forEach.call(h.querySelectorAll('.cardio-history,.cardio-linked-history,.cardio-progress-linked'),function(el){el.remove()});
+    var a=cardioItems();
+    if(!a.length)a=cardioFromLogs();
+    var box=document.createElement('div');box.className='card cardio-history-fixed';
+    var rows=a.map(function(x){var sec=Number(x.seconds||0)||Math.round(Number(x.minutes||x.durationMinutes||0)*60),d=new Date(x.date||x.timestamp),ds=isNaN(d)?String(x.date||''):d.toLocaleString(),m=Math.floor(sec/60),s=sec%60,dist=x.distance==null||x.distance===''?'—':String(x.distance)+(x.unit?' '+x.unit:'');return '<tr><td>'+esc(ds)+'</td><td>'+esc(x.routine||'Cardio')+'</td><td>'+esc(x.type||x.cardioType||'Cardio')+'</td><td>'+m+':'+String(s).padStart(2,'0')+'</td><td>'+esc(dist)+'</td></tr>'}).join('');
+    box.innerHTML='<h3>Cardio Sessions</h3>'+(rows?'<div class="cardio-table-wrap"><table class="progress-table cardio-table"><thead><tr><th>Date</th><th>Routine</th><th>Cardio</th><th>Duration</th><th>Distance</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="muted">No cardio sessions recorded yet.</div>');
+    h.appendChild(box);
+  }
+
+  function style(){
+    if(document.getElementById('history-cardio-fix-style'))return;
+    var s=document.createElement('style');s.id='history-cardio-fix-style';s.textContent=`
+#history{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+#history .progress-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;word-break:break-word!important}
+#history .progress-table th,#history .progress-table td{overflow-wrap:anywhere!important;word-break:break-word!important}
+#history .cardio-history-fixed{margin-top:16px!important;padding:16px!important;overflow:hidden!important}
+#history .cardio-history-fixed h3{margin:0 0 12px!important}
+#history .cardio-table{font-size:13px!important}
+#history .cardio-table th,#history .cardio-table td{padding:8px 6px!important}
+#history .cardio-table-wrap{width:100%!important;overflow:hidden!important}
+@media(max-width:650px){
+ #history .progress-table{font-size:12px!important}
+ #history .progress-table th,#history .progress-table td{padding:7px 5px!important}
+ #history h3{font-size:21px!important}
+ #history .progress-table:nth-of-type(1) th:nth-child(5),#history .progress-table:nth-of-type(1) td:nth-child(5){display:none!important}
+ #history .progress-table:nth-of-type(1) th:nth-child(1),#history .progress-table:nth-of-type(1) td:nth-child(1){width:30%!important}
+ #history .progress-table:nth-of-type(1) th:nth-child(2),#history .progress-table:nth-of-type(1) td:nth-child(2){width:18%!important}
+ #history .progress-table:nth-of-type(1) th:nth-child(3),#history .progress-table:nth-of-type(1) td:nth-child(3){width:18%!important}
+ #history .progress-table:nth-of-type(1) th:nth-child(4),#history .progress-table:nth-of-type(1) td:nth-child(4){width:34%!important}
+ #history .progress-table:nth-of-type(2) th:nth-child(4),#history .progress-table:nth-of-type(2) td:nth-child(4),#history .progress-table:nth-of-type(2) th:nth-child(5),#history .progress-table:nth-of-type(2) td:nth-child(5),#history .progress-table:nth-of-type(2) th:nth-child(8),#history .progress-table:nth-of-type(2) td:nth-child(8){display:none!important}
+ #history .progress-table:nth-of-type(2) th:nth-child(1),#history .progress-table:nth-of-type(2) td:nth-child(1){width:26%!important}
+ #history .progress-table:nth-of-type(2) th:nth-child(2),#history .progress-table:nth-of-type(2) td:nth-child(2){width:26%!important}
+ #history .progress-table:nth-of-type(2) th:nth-child(3),#history .progress-table:nth-of-type(2) td:nth-child(3){width:30%!important}
+ #history .progress-table:nth-of-type(2) th:nth-child(6),#history .progress-table:nth-of-type(2) td:nth-child(6){width:18%!important}
+ #history .cardio-table th:nth-child(1),#history .cardio-table td:nth-child(1){width:27%!important}
+ #history .cardio-table th:nth-child(2),#history .cardio-table td:nth-child(2){width:27%!important}
+ #history .cardio-table th:nth-child(3),#history .cardio-table td:nth-child(3){width:20%!important}
+ #history .cardio-table th:nth-child(4),#history .cardio-table td:nth-child(4){width:14%!important}
+ #history .cardio-table th:nth-child(5),#history .cardio-table td:nth-child(5){width:12%!important}
+}
+`;
+    document.head.appendChild(s);
+  }
+
+  function wrapHistory(){
+    if(typeof window.renderHistory!=='function'||window.renderHistory.__historyCardioFixed)return false;
+    var original=window.renderHistory;
+    window.renderHistory=function(){
+      cleanCardioLogs();
+      var savedLogs=null;
+      try{
+        if(typeof state==='object'&&state&&Array.isArray(state.logs)){savedLogs=state.logs;state.logs=state.logs.filter(function(l){return !cardioLog(l)});}
+        var result=original.apply(this,arguments);
+        if(savedLogs&&typeof state==='object'&&state)state.logs=savedLogs;
+        var h=document.getElementById('history');
+        renderCardioBlock(h);
+        return result;
+      }catch(e){if(savedLogs&&typeof state==='object'&&state)state.logs=savedLogs;throw e}
+    };
+    window.renderHistory.__historyCardioFixed=true;
+    return true;
+  }
+
+  function refresh(){style();cleanCardioLogs();if(wrapHistory()&&document.getElementById('history')){var h=document.getElementById('history');if(h.innerHTML)renderCardioBlock(h)}}
+  style();
+  var tries=0,t=setInterval(function(){if(wrapHistory()){clearInterval(t);refresh()}else if(++tries>160)clearInterval(t)},50);
+  window.addEventListener('load',refresh);
+  setTimeout(refresh,500);
+  var oldSet=localStorage.setItem.bind(localStorage);
+  if(!window.__historyCardioStorageV1){window.__historyCardioStorageV1=true;localStorage.setItem=function(k,v){var r=oldSet(k,v);if(k===CARDIO_KEY||k===TIMER_KEY)setTimeout(function(){if(document.getElementById('history')&&document.getElementById('history').offsetParent!==null&&typeof window.renderHistory==='function')window.renderHistory()},50);return r}}
+})();
