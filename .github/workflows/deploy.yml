@@ -1,7 +1,5 @@
 name: Deploy to GitHub Pages
 
-# Deployment refresh for Image 2 branding test v7
-# Force Pages deployment
 on:
   push:
     branches:
