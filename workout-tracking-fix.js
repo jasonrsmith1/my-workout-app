@@ -3,6 +3,11 @@
   if(window.__workoutTrackingFixV3)return;
   window.__workoutTrackingFixV3=true;
 
+  var style=document.createElement('style');
+  style.id='workout-tracking-state-v3';
+  style.textContent='#routine .setrow .setdone{background:#e5e5ea!important;color:#6c6c70!important;border:2px solid #8e8e93!important;border-radius:11px!important;font-size:0!important;font-weight:800!important;cursor:pointer!important;opacity:1!important;box-shadow:none!important}#routine .setrow .setdone::after{content:"✓";font-size:20px!important;color:transparent!important}#routine .setrow .setdone[data-saved="1"]{background:#34c759!important;border-color:#34c759!important;color:#fff!important}#routine .setrow .setdone[data-saved="1"]::after{color:#fff!important}#routine .setrow.completed{background:#dff7e5!important}';
+  document.head.appendChild(style);
+
   function getState(){
     try{return JSON.parse(localStorage.getItem('workout_v3')||'{"sheet":null,"routine":0,"logs":[],"custom":[]}')}catch(e){return {sheet:null,routine:0,logs:[],custom:[]};}
   }
