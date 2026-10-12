@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if(window.__buildVersionV1)return;
-  window.__buildVersionV1=true;
+  if(window.__buildVersionV2)return;
+  window.__buildVersionV2=true;
   var BUILD='v36';
   function render(){
     var panel=document.getElementById('appSettingsPanel');
@@ -9,9 +9,20 @@
     var info=panel.querySelector('.asp-info');
     if(!info)return;
     var el=info.querySelector('[data-build-version]');
-    if(!el){el=document.createElement('small');el.setAttribute('data-build-version','1');info.appendChild(el);}
-    el.textContent='Build '+BUILD+' • cache refresh enabled';
+    if(!el){
+      el=document.createElement('small');
+      el.setAttribute('data-build-version','1');
+      el.textContent='Build '+BUILD+' • cache refresh enabled';
+      info.appendChild(el);
+    }else if(el.textContent!=='Build '+BUILD+' • cache refresh enabled'){
+      el.textContent='Build '+BUILD+' • cache refresh enabled';
+    }
   }
-  new MutationObserver(function(){render()}).observe(document.documentElement,{childList:true,subtree:true});
+  var timer=0;
+  function schedule(){
+    clearTimeout(timer);
+    timer=setTimeout(render,100);
+  }
   render();
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 })();
