@@ -29,3 +29,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# v37 deployment verification: trigger a fresh Pages run instead of rerunning a failed artifact upload.
