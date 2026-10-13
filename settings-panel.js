@@ -2,6 +2,7 @@
   'use strict';
   if(window.__settingsPanelV2)return;
   window.__settingsPanelV2=true;
+  var BUILD=window.__APP_BUILD_VERSION||'v37';
   function home(){
     var panel=document.getElementById('appSettingsPanel');if(panel)panel.remove();
     var h=document.getElementById('homeTab');if(h){h.style.display='block';document.documentElement.classList.add('hr-home-active');document.body.classList.add('hr-home-active')}
@@ -9,9 +10,7 @@
   }
   function resetSavedDays(){
     if(!window.confirm('Reset Saved Days? This will permanently delete all saved workout history, cardio history, and progress. Your workout routines and exercise setup will stay.'))return;
-    try{
-      if(typeof state==='object'&&state){state.logs=[];if(typeof save==='function')save();}
-    }catch(e){}
+    try{if(typeof state==='object'&&state){state.logs=[];if(typeof save==='function')save();}}catch(e){}
     try{localStorage.removeItem('cardio_history_v1');}catch(e){}
     try{localStorage.removeItem('workout_timer_v1');}catch(e){}
     try{if(typeof renderHistory==='function')renderHistory();}catch(e){}
@@ -19,7 +18,7 @@
   }
   function show(){
     var old=document.getElementById('appSettingsPanel');if(old)old.remove();
-    var p=document.createElement('section');p.id='appSettingsPanel';p.innerHTML='<div class="asp-card"><button class="asp-back" type="button">‹ Home</button><div class="asp-icon">⚙</div><h1>Settings</h1><p class="asp-sub">Simple app preferences and information.</p><div class="asp-row"><div><b>Workout data</b><span>Your saved workouts stay on this device.</span></div><strong>On</strong></div><div class="asp-row"><div><b>History &amp; Progress</b><span>Completed strength and cardio sessions are kept separate.</span></div><strong>Ready</strong></div><div class="asp-danger"><div><b>Reset Saved Days</b><span>Permanently clear all saved workout history, cardio history, and progress. Your routines stay.</span></div><button class="asp-reset" type="button">Clear History</button></div><div class="asp-info"><b>My Workout App</b><span>Train / Track / Improve</span><small>Settings panel v2</small></div></div>';
+    var p=document.createElement('section');p.id='appSettingsPanel';p.innerHTML='<div class="asp-card"><button class="asp-back" type="button">‹ Home</button><div class="asp-icon">⚙</div><h1>Settings</h1><p class="asp-sub">Simple app preferences and information.</p><div class="asp-row"><div><b>Workout data</b><span>Your saved workouts stay on this device.</span></div><strong>On</strong></div><div class="asp-row"><div><b>History &amp; Progress</b><span>Completed strength and cardio sessions are kept separate.</span></div><strong>Ready</strong></div><div class="asp-danger"><div><b>Reset Saved Days</b><span>Permanently clear all saved workout history, cardio history, and progress. Your routines stay.</span></div><button class="asp-reset" type="button">Clear History</button></div><div class="asp-info"><b>My Workout App</b><span>Train / Track / Improve</span><small>Settings panel v2 • Build '+BUILD+'</small></div></div>';
     document.body.appendChild(p);
     p.querySelector('.asp-back').addEventListener('click',home);
     p.querySelector('.asp-reset').addEventListener('click',resetSavedDays);
