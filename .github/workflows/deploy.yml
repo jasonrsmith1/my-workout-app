@@ -30,4 +30,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-# v37 deployment verification: trigger a fresh Pages run instead of rerunning a failed artifact upload.
+# v38 deployment verification: trigger a fresh Pages run after the History polish pass.
