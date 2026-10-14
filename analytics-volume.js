@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if(window.__analyticsVolumeV2)return;
-  window.__analyticsVolumeV2=true;
+  if(window.__analyticsVolumeV3)return;
+  window.__analyticsVolumeV3=true;
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return isFinite(x)?x:0;}
   function logs(){try{var x=JSON.parse(localStorage.getItem('workout_v3')||'{}').logs;return Array.isArray(x)?x:[]}catch(e){return[]}}
   function volume(l){if(!l||l.cardio===true)return 0;var eq=String(l.equipment||'').trim().toLowerCase();var mult=eq==='dumbbells'?2:1;return n(l.repsCompleted||l.reps)*n(l.weight||l.load)*mult;}
@@ -14,11 +14,12 @@
     var f=selected(),total=0;
     logs().forEach(function(l){var d=dateOf(l);if(!d||l.cardio===true)return;if(f.year&&d.getFullYear()!==f.year)return;if(f.month!=='all'&&d.getMonth()!==f.month)return;if(!typeMatches(l,f.type)||!routineMatches(l,f.routine))return;total+=volume(l);});
     var stat=summary.querySelector('[data-total-volume]');
-    if(!stat){stat=document.createElement('div');stat.className='ha-stat';stat.setAttribute('data-total-volume','1');stat.innerHTML='<b>0 lb</b><span>Total Volume</span>';summary.appendChild(stat);}
-    stat.querySelector('b').textContent=Math.round(total).toLocaleString()+' lb';
+    if(!stat){stat=document.createElement('div');stat.className='ha-stat';stat.setAttribute('data-total-volume','1');stat.innerHTML='<b></b><span>Total Volume</span>';summary.appendChild(stat);}
+    var value=Math.round(total).toLocaleString()+' lb',valueNode=stat.querySelector('b');
+    if(valueNode&&valueNode.textContent!==value)valueNode.textContent=value;
   }
-  function boot(){render();}
   var timer=0;
+  function boot(){render();}
   new MutationObserver(function(){clearTimeout(timer);timer=setTimeout(boot,60)}).observe(document.documentElement,{childList:true,subtree:true});
   document.addEventListener('change',function(e){if(/^ha(Year|Month|Type|Routine)$/.test(e.target&&e.target.id||''))setTimeout(render,0)},true);
   window.addEventListener('load',boot);
