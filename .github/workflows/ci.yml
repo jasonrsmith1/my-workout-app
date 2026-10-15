@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in index.html category-navigation.js button-safety.js home-redesign.js home-navigation-fix.js workout-tracking-fix.js cardio-history-progress.js history-cardio-fix.js history-drilldown-fix.js finish-workout-reset.js settings-panel.js ui-cleanup-v1.js; do
+          for file in index.html category-navigation.js button-safety.js home-redesign.js home-navigation-fix.js workout-tracking-fix.js cardio-history-progress.js history-cardio-fix.js history-drilldown-fix.js finish-workout-reset.js settings-panel.js ui-cleanup-v1.js screen-fit-v2.js; do
             test -s "$file"
           done
 
@@ -72,12 +72,14 @@ jobs:
           settings = Path('settings-panel.js').read_text(encoding='utf-8')
           assert 'button-safety-loader' in nav
           assert 'ui-cleanup-loader' in nav
+          assert 'screen-fit-v2-loader' in nav
           assert "setAttribute('type','button')" in safety
           assert 'data-nav="workout"' in home
           assert 'data-nav="history"' in home
           assert 'data-nav="settings"' in home_nav or "tab==='settings'" in home_nav
           assert re.search(r'finish-workout-reset\.js\?v=5', nav)
           assert re.search(r'ui-cleanup-v1\.js\?v=1', nav)
+          assert re.search(r'screen-fit-v2\.js\?v=1', nav)
           assert re.search(r'cardio-history-suppress\.js\?v=2', nav)
           assert 'dispatchEvent(new Event' not in finish
           assert "state.logs=[]" in settings
