@@ -34,13 +34,11 @@ jobs:
         run: |
           from pathlib import Path
           import re
-
           root = Path('.')
           html = (root / 'index.html').read_text(encoding='utf-8')
           refs = set(re.findall(r'<script[^>]+src=[\"\']([^\"\']+)[\"\']', html))
           nav = (root / 'category-navigation.js').read_text(encoding='utf-8')
           refs.update(re.findall(r"loadScript\([^,]+,\s*['\"]\./([^?'\"]+)", nav))
-
           missing = []
           for ref in sorted(refs):
             if ref.startswith(('http://', 'https://', '//', 'data:')):
@@ -56,18 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in \
-            index.html \
-            category-navigation.js \
-            button-safety.js \
-            home-redesign.js \
-            home-navigation-fix.js \
-            workout-tracking-fix.js \
-            cardio-history-progress.js \
-            history-cardio-fix.js \
-            history-drilldown-fix.js \
-            finish-workout-reset.js \
-            settings-panel.js; do
+          for file in index.html category-navigation.js button-safety.js home-redesign.js home-navigation-fix.js workout-tracking-fix.js cardio-history-progress.js history-cardio-fix.js history-drilldown-fix.js finish-workout-reset.js settings-panel.js; do
             test -s "$file"
           done
 
@@ -76,7 +63,6 @@ jobs:
         run: |
           from pathlib import Path
           import re
-
           nav = Path('category-navigation.js').read_text(encoding='utf-8')
           safety = Path('button-safety.js').read_text(encoding='utf-8')
           home = Path('home-redesign.js').read_text(encoding='utf-8')
@@ -84,20 +70,17 @@ jobs:
           finish = Path('finish-workout-reset.js').read_text(encoding='utf-8')
           suppress = Path('cardio-history-suppress.js').read_text(encoding='utf-8')
           settings = Path('settings-panel.js').read_text(encoding='utf-8')
-
           assert 'button-safety-loader' in nav
           assert "setAttribute('type','button')" in safety
           assert 'data-nav="workout"' in home
           assert 'data-nav="history"' in home
           assert 'data-nav="settings"' in home_nav or "tab==='settings'" in home_nav
-          assert re.search(r'finish-workout-reset\.js\?v=4', nav)
+          assert re.search(r'finish-workout-reset\.js\?v=5', nav)
           assert re.search(r'cardio-history-suppress\.js\?v=2', nav)
-
           assert 'dispatchEvent(new Event' not in finish
           assert "state.logs=[]" in settings
           assert "localStorage.removeItem('cardio_history_v1')" in settings
           assert "localStorage.removeItem('workout_timer_v1')" in settings
-
           assert 'setInterval(' not in suppress
           assert 'MutationObserver' in suppress
 
@@ -106,7 +89,6 @@ jobs:
         run: |
           from pathlib import Path
           import re
-
           nav = Path('category-navigation.js').read_text(encoding='utf-8')
           pairs = re.findall(r"loadScript\(['\"]([^'\"]+)['\"],['\"]([^'\"]+)['\"]\)", nav)
           ids = [x[0] for x in pairs]
