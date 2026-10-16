@@ -47,6 +47,19 @@ select,input{font-size:16px!important;line-height:1.2!important;min-width:0!impo
   .metricgrid{gap:8px!important}
   .metric{padding:10px!important}
   .section{margin-top:14px!important;margin-bottom:5px!important;padding:8px 9px!important}
+  #history .ha-drill{overflow:hidden!important}
+  #history .ha-drill table{width:100%!important;table-layout:fixed!important;font-size:12.5px!important}
+  #history .ha-drill th,#history .ha-drill td{padding:7px 5px!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;vertical-align:top!important}
+  #history .ha-drill th:nth-child(1),#history .ha-drill td:nth-child(1){width:21%!important;white-space:nowrap!important}
+  #history .ha-drill th:nth-child(2),#history .ha-drill td:nth-child(2){width:15%!important;white-space:nowrap!important}
+  #history .ha-drill th:nth-child(3),#history .ha-drill td:nth-child(3){width:44%!important}
+  #history .ha-drill th:nth-child(4),#history .ha-drill td:nth-child(4){width:20%!important;white-space:nowrap!important}
+  #history .ha-drill td:nth-child(3) strong{display:block!important;font-size:13px!important;line-height:1.2!important}
+  #history .ha-drill .hd-routine{font-size:11px!important;line-height:1.2!important;display:block!important;margin-top:2px!important}
+  #homeTab.home-redesign .hr-bottomnav{grid-template-columns:repeat(4,minmax(0,1fr))!important;padding-left:8px!important;padding-right:8px!important}
+  #homeTab.home-redesign .hr-navbtn{min-width:0!important;width:100%!important;font-size:11px!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;gap:2px!important}
+  #homeTab.home-redesign .hr-navbtn span{white-space:nowrap!important;display:block!important;max-width:100%!important;overflow:visible!important}
+  #homeTab.home-redesign .hr-navbtn svg{width:27px!important;height:27px!important;flex:0 0 27px!important}
 }
 @media(max-width:360px){
   .card{padding:10px!important}
@@ -55,7 +68,21 @@ select,input{font-size:16px!important;line-height:1.2!important;min-width:0!impo
   .metric{padding:9px!important}
   .setrow{gap:5px!important;padding:7px!important}
   .exercise-item{padding:7px!important}
+  #history .ha-drill table{font-size:12px!important}
+  #history .ha-drill th,#history .ha-drill td{padding:6px 4px!important}
+  #history .ha-drill th:nth-child(1),#history .ha-drill td:nth-child(1){width:22%!important}
+  #history .ha-drill th:nth-child(2),#history .ha-drill td:nth-child(2){width:14%!important}
+  #history .ha-drill th:nth-child(3),#history .ha-drill td:nth-child(3){width:44%!important}
+  #history .ha-drill th:nth-child(4),#history .ha-drill td:nth-child(4){width:20%!important}
+  #homeTab.home-redesign .hr-navbtn{font-size:10px!important}
 }
 `;
   (document.head||document.documentElement).appendChild(s);
+  function compactDate(t){var m=String(t||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[1]+'/'+m[2]+'/'+m[3].slice(-2):t}
+  function compactType(t){var x=String(t||'').trim();if(/^workout$/i.test(x))return'W/O';if(/^walking$/i.test(x))return'Walk';if(/^running$/i.test(x))return'Run';if(/^weight\s*training$/i.test(x))return'Weights';return x}
+  function compactRoutine(t){var x=String(t||'').trim();x=x.replace(/^[^–—-]+\s*[–—-]\s*/,'');x=x.replace(/\s*\([^)]*minutes?\)\s*$/i,'');x=x.replace(/\s*\([^)]*mins?\)\s*$/i,'');return x}
+  function compactDrilldown(){var d=document.getElementById('haDrill');if(!d||window.innerWidth>430)return;var table=d.querySelector('table');if(!table)return;var heads=table.querySelectorAll('thead th');Array.prototype.forEach.call(heads,function(h){var t=(h.textContent||'').trim();if(/^main focus$/i.test(t))h.textContent='Focus';if(/^type$/i.test(t))h.textContent='Type';});Array.prototype.forEach.call(table.querySelectorAll('tbody tr'),function(row){var c=row.querySelectorAll('td');if(c.length<4)return;c[0].textContent=compactDate(c[0].textContent.trim());c[1].textContent=compactType(c[1].textContent.trim());var strong=c[2].querySelector('strong'),span=c[2].querySelector('.hd-routine');if(strong)strong.textContent=compactType(strong.textContent);if(span)span.textContent=compactRoutine(span.textContent);else c[2].textContent=compactRoutine(c[2].textContent);});}
+  function boot(){compactDrilldown();setTimeout(compactDrilldown,250);setTimeout(compactDrilldown,800);}
+  boot();window.addEventListener('resize',compactDrilldown);window.addEventListener('load',compactDrilldown);
+  if(window.MutationObserver){var mo=new MutationObserver(function(){clearTimeout(window.__iosTextFitDrillTimer);window.__iosTextFitDrillTimer=setTimeout(compactDrilldown,40)});mo.observe(document.body,{childList:true,subtree:true});}
 })();
