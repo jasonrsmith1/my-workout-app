@@ -45,7 +45,15 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
 #builderTab .toolbar .log,#builderTab .card>div>.log,#builderTab button.log,#builderTab #builder>div:last-child .log{background:linear-gradient(135deg,var(--brand-cyan),var(--brand-cyan-bright))!important;color:#06235f!important}
 #muscleChoices label:has(input:checked){background:#e7f8ee!important;border-color:var(--brand-green)!important;color:#0b5c29!important}
 #muscleChoices input{accent-color:var(--brand-green)!important}
-@media(max-width:600px),(pointer:coarse){
+/* Home landing tiles: keep every card contained, readable, and clear of the fixed bottom nav. */
+#homeTab.home-redesign .hr-shell{padding-bottom:120px!important}
+#homeTab.home-redesign .hr-grid{align-items:stretch!important;grid-auto-rows:minmax(0,1fr)!important}
+#homeTab.home-redesign .hr-card{box-sizing:border-box!important;min-width:0!important;width:100%!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important}
+#homeTab.home-redesign .hr-card-icon{flex:0 0 auto!important}
+#homeTab.home-redesign .hr-card h3,#homeTab.home-redesign .hr-card p{max-width:calc(100% - 18px)!important;overflow-wrap:anywhere!important;word-break:normal!important}
+#homeTab.home-redesign .hr-card-arrow{z-index:2!important;pointer-events:none!important}
+#homeTab.home-redesign .hr-bottomnav{padding-bottom:max(7px,env(safe-area-inset-bottom))!important}
+@media(max-width:650px),(pointer:coarse){
   .top h1{font-size:19px!important;line-height:1.15!important}
   .top p{font-size:12px!important;line-height:1.3!important}
   .card{padding:13px!important}
@@ -61,12 +69,17 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
   .section{font-size:14px!important;line-height:1.3!important}
   .progress-table{display:block!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;white-space:nowrap!important}
   .progress-table table{min-width:560px!important}
+  #homeTab.home-redesign .hr-shell{padding-left:8px!important;padding-right:8px!important;padding-bottom:126px!important}
+  #homeTab.home-redesign .hr-grid{gap:10px!important;margin-top:12px!important}
+  #homeTab.home-redesign .hr-card{min-height:172px!important;padding:18px 15px!important}
 }
 @media(max-width:390px){
   .top h1{font-size:18px!important}
   .tabs .tab{font-size:15px!important;padding-left:5px!important;padding-right:5px!important}
   .card{padding:11px!important}
   .section{font-size:13px!important}
+  #homeTab.home-redesign .hr-shell{padding-bottom:126px!important}
+  #homeTab.home-redesign .hr-card{min-height:164px!important}
 }
 `;
   (document.head||document.documentElement).appendChild(s);
