@@ -1,13 +1,17 @@
 (function(){
   'use strict';
-  if(window.__iosHomeThemeV2)return;
-  window.__iosHomeThemeV2=true;
-  var id='ios-home-theme-v2';
+  if(window.__iosHomeThemeV3)return;
+  window.__iosHomeThemeV3=true;
+  var id='ios-home-theme-v3';
   if(document.getElementById(id))return;
   function removeLegacyArt(){
     document.querySelectorAll('.image2-home-bg,.image2-title-bg,.image2-title-art,.top img,.top svg,.top canvas').forEach(function(x){x.remove()});
   }
-  removeLegacyArt();
+  function removeTopBar(){
+    document.querySelectorAll('.top').forEach(function(x){x.remove()});
+  }
+  function clean(){removeLegacyArt();removeTopBar()}
+  clean();
   var s=document.createElement('style');
   s.id=id;
   s.textContent=`
@@ -24,10 +28,7 @@
 }
 html,body{max-width:100%!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%!important}
 body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!important;color:var(--brand-ink)!important}
-.top{background:linear-gradient(135deg,var(--brand-navy),#073b6f)!important;color:#fff!important;border-bottom:0!important;box-shadow:0 3px 14px rgba(6,35,95,.18)!important}
-.top:before,.top:after{display:none!important;content:none!important;background:none!important}
-.top h1{color:#fff!important;max-width:100%;overflow-wrap:anywhere!important}
-.top p{color:#d9efff!important;max-width:100%;overflow-wrap:anywhere!important}
+.top{display:none!important}
 .card{border-color:rgba(25,191,255,.16)!important}
 .tabs .tab{background:#e7f4ff!important;color:var(--brand-navy)!important;border:1px solid #c9e6f8!important}
 .tabs .tab.active{background:linear-gradient(135deg,var(--brand-cyan),var(--brand-cyan-bright))!important;color:#06235f!important;border-color:transparent!important;box-shadow:0 3px 9px rgba(25,191,255,.25)!important}
@@ -58,8 +59,6 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
 #homeTab.home-redesign .hr-card-arrow{z-index:2!important;pointer-events:none!important}
 #homeTab.home-redesign .hr-bottomnav{padding-bottom:max(7px,env(safe-area-inset-bottom))!important}
 @media(max-width:650px),(pointer:coarse){
-  .top h1{font-size:19px!important;line-height:1.15!important}
-  .top p{font-size:12px!important;line-height:1.3!important}
   .card{padding:13px!important}
   .card h1,.card h2,.card h3,.card h4,.card p,.section,.exercise-group h3,.exercise-item{overflow-wrap:anywhere!important;word-break:normal!important;max-width:100%!important}
   .tabs .tab,.log,.tab,button,select,input{font-size:16px!important}
@@ -78,7 +77,6 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
   #homeTab.home-redesign .hr-card{min-height:172px!important;padding:18px 15px!important}
 }
 @media(max-width:390px){
-  .top h1{font-size:18px!important}
   .tabs .tab{font-size:15px!important;padding-left:5px!important;padding-right:5px!important}
   .card{padding:11px!important}
   .section{font-size:13px!important}
@@ -87,4 +85,6 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
 }
 `;
   (document.head||document.documentElement).appendChild(s);
+  var observer=new MutationObserver(function(){removeTopBar();removeLegacyArt()});
+  observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
