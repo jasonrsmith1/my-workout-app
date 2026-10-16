@@ -2,14 +2,13 @@
   'use strict';
   var art='./home-art.jpg?image2=6';
   function css(){
-    var s=document.createElement('style');s.id='image2-branding-v6';s.textContent=`
-/* Image 2 branding: remove legacy artwork and make the title bar image-first. */
-.top{position:relative!important;overflow:hidden!important;min-height:82px!important;padding:0!important;background:#087fd4!important;color:#fff!important;border:0!important;box-shadow:0 3px 16px rgba(0,70,150,.22)!important;display:flex!important;align-items:flex-end!important}
+    var s=document.createElement('style');s.id='image2-branding-v7';s.textContent=`
+/* Image 2 branding: keep the title bar clean; remove the artwork from the top bar. */
+.top{position:relative!important;overflow:hidden!important;min-height:82px!important;padding:0!important;background:#06235f!important;color:#fff!important;border:0!important;box-shadow:0 3px 16px rgba(0,36,100,.22)!important;display:flex!important;align-items:flex-end!important}
 .top>*{position:relative!important;z-index:2!important}
-.top:before{content:'';position:absolute!important;inset:0!important;z-index:0!important;background-image:url('./home-art.jpg?image2=6')!important;background-size:cover!important;background-position:center 42%!important;background-repeat:no-repeat!important}
-.top:after{content:'';position:absolute!important;inset:0!important;z-index:1!important;background:linear-gradient(90deg,rgba(0,28,80,.66),rgba(0,60,130,.18),rgba(0,0,0,.03))!important;pointer-events:none!important}
+.top:before,.top:after{display:none!important;content:none!important;background:none!important}
 .top p,.top svg,.top canvas,.top .image2-title-art,.top .image2-title-bg,.top img{display:none!important}
-.top h1{margin:0!important;padding:18px 20px!important;color:#fff!important;font-size:25px!important;line-height:1.05!important;font-weight:800!important;letter-spacing:-.45px!important;text-shadow:0 2px 8px rgba(0,0,0,.3)!important}
+.top h1{margin:0!important;padding:18px 20px!important;color:#fff!important;font-size:25px!important;line-height:1.05!important;font-weight:800!important;letter-spacing:-.45px!important;text-shadow:none!important}
 #image2-home{position:fixed!important;inset:0!important;z-index:999999!important;background:#087fd4!important;display:block!important;overflow:hidden!important}
 #image2-home:before{content:'';position:absolute!important;inset:0!important;background-image:url('./home-art.jpg?image2=6')!important;background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
 #image2-home:after{content:'';position:absolute!important;inset:0!important;background:linear-gradient(180deg,rgba(0,25,80,.02) 15%,rgba(0,20,60,.08) 50%,rgba(0,20,55,.72) 100%)!important;pointer-events:none!important}
