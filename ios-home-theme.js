@@ -1,9 +1,13 @@
 (function(){
   'use strict';
-  if(window.__iosHomeThemeV1)return;
-  window.__iosHomeThemeV1=true;
-  var id='ios-home-theme-v1';
+  if(window.__iosHomeThemeV2)return;
+  window.__iosHomeThemeV2=true;
+  var id='ios-home-theme-v2';
   if(document.getElementById(id))return;
+  function removeLegacyArt(){
+    document.querySelectorAll('.image2-home-bg,.image2-title-bg,.image2-title-art,.top img,.top svg,.top canvas').forEach(function(x){x.remove()});
+  }
+  removeLegacyArt();
   var s=document.createElement('style');
   s.id=id;
   s.textContent=`
@@ -21,6 +25,7 @@
 html,body{max-width:100%!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%!important}
 body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!important;color:var(--brand-ink)!important}
 .top{background:linear-gradient(135deg,var(--brand-navy),#073b6f)!important;color:#fff!important;border-bottom:0!important;box-shadow:0 3px 14px rgba(6,35,95,.18)!important}
+.top:before,.top:after{display:none!important;content:none!important;background:none!important}
 .top h1{color:#fff!important;max-width:100%;overflow-wrap:anywhere!important}
 .top p{color:#d9efff!important;max-width:100%;overflow-wrap:anywhere!important}
 .card{border-color:rgba(25,191,255,.16)!important}
@@ -45,7 +50,6 @@ body{background:linear-gradient(180deg,#eef7ff 0,#f2f2f7 32%,#f2f2f7 100%)!impor
 #builderTab .toolbar .log,#builderTab .card>div>.log,#builderTab button.log,#builderTab #builder>div:last-child .log{background:linear-gradient(135deg,var(--brand-cyan),var(--brand-cyan-bright))!important;color:#06235f!important}
 #muscleChoices label:has(input:checked){background:#e7f8ee!important;border-color:var(--brand-green)!important;color:#0b5c29!important}
 #muscleChoices input{accent-color:var(--brand-green)!important}
-/* Home landing tiles: keep every card contained, readable, and clear of the fixed bottom nav. */
 #homeTab.home-redesign .hr-shell{padding-bottom:120px!important}
 #homeTab.home-redesign .hr-grid{align-items:stretch!important;grid-auto-rows:minmax(0,1fr)!important}
 #homeTab.home-redesign .hr-card{box-sizing:border-box!important;min-width:0!important;width:100%!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important}
