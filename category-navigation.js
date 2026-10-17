@@ -15,7 +15,7 @@
     if(window.__iosDevelopmentStage)return;
     window.__iosDevelopmentStage=true;
     var head=document.head||document.documentElement;
-    function meta(name,content){var m=document.querySelector('meta[name="'+name+'"];');if(!m){m=document.createElement('meta');m.name=name;head.appendChild(m);}m.content=content;}
+    function meta(name,content){var m=document.querySelector('meta[name="'+name+'"]');if(!m){m=document.createElement('meta');m.name=name;head.appendChild(m);}m.content=content;}
     meta('apple-mobile-web-app-capable','yes');meta('apple-mobile-web-app-title','My Workout');meta('apple-mobile-web-app-status-bar-style','black-translucent');meta('theme-color','#06235f');
     var manifest=document.querySelector('link[rel="manifest"]');
     if(!manifest){manifest=document.createElement('link');manifest.rel='manifest';var json={name:'My Workout App',short_name:'My Workout',start_url:'./',scope:'./',display:'standalone',orientation:'portrait',background_color:'#f2f2f7',theme_color:'#06235f',description:'My Workout App — iOS-ready workout tracking and routines.',icons:[{src:'./icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]};manifest.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(json));head.appendChild(manifest);}
