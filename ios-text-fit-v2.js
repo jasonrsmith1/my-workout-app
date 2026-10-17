@@ -55,7 +55,7 @@ select,input{font-size:16px!important;line-height:1.2!important;min-width:0!impo
   #history .ha-drill th:nth-child(3),#history .ha-drill td:nth-child(3){width:44%!important}
   #history .ha-drill th:nth-child(4),#history .ha-drill td:nth-child(4){width:20%!important;white-space:nowrap!important}
   #history .ha-drill td:nth-child(3) strong{display:block!important;font-size:13px!important;line-height:1.2!important}
-  #history .ha-drill .hd-routine{font-size:11px!important;line-height:1.2!important;display:block!important;margin-top:2px!important}
+  #history .ha-drill .hd-routine{font-size:11px!important;line-height:1.2!important;display:block!important;margin-top:2px!important;overflow-wrap:anywhere!important;word-break:normal!important}
   #homeTab.home-redesign .hr-bottomnav{grid-template-columns:repeat(4,minmax(0,1fr))!important;padding-left:8px!important;padding-right:8px!important}
   #homeTab.home-redesign .hr-navbtn{min-width:0!important;width:100%!important;font-size:11px!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;gap:2px!important}
   #homeTab.home-redesign .hr-navbtn span{white-space:nowrap!important;display:block!important;max-width:100%!important;overflow:visible!important}
@@ -80,7 +80,7 @@ select,input{font-size:16px!important;line-height:1.2!important;min-width:0!impo
   (document.head||document.documentElement).appendChild(s);
   function compactDate(t){var m=String(t||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[1]+'/'+m[2]+'/'+m[3].slice(-2):t}
   function compactType(t){var x=String(t||'').trim();if(/^workout$/i.test(x))return'W/O';if(/^walking$/i.test(x))return'Walk';if(/^running$/i.test(x))return'Run';if(/^weight\s*training$/i.test(x))return'Weights';return x}
-  function compactRoutine(t){var x=String(t||'').trim();x=x.replace(/^[^–—-]+\s*[–—-]\s*/,'');x=x.replace(/\s*\([^)]*minutes?\)\s*$/i,'');x=x.replace(/\s*\([^)]*mins?\)\s*$/i,'');return x}
+  function compactRoutine(t){return String(t||'').trim()}
   function compactDrilldown(){var d=document.getElementById('haDrill');if(!d||window.innerWidth>430)return;var table=d.querySelector('table');if(!table)return;var heads=table.querySelectorAll('thead th');Array.prototype.forEach.call(heads,function(h){var t=(h.textContent||'').trim();if(/^main focus$/i.test(t))h.textContent='Focus';if(/^type$/i.test(t))h.textContent='Type';});Array.prototype.forEach.call(table.querySelectorAll('tbody tr'),function(row){var c=row.querySelectorAll('td');if(c.length<4)return;c[0].textContent=compactDate(c[0].textContent.trim());c[1].textContent=compactType(c[1].textContent.trim());var strong=c[2].querySelector('strong'),span=c[2].querySelector('.hd-routine');if(strong)strong.textContent=compactType(strong.textContent);if(span)span.textContent=compactRoutine(span.textContent);else c[2].textContent=compactRoutine(c[2].textContent);});}
   function boot(){compactDrilldown();setTimeout(compactDrilldown,250);setTimeout(compactDrilldown,800);}
   boot();window.addEventListener('resize',compactDrilldown);window.addEventListener('load',compactDrilldown);
