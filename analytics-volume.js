@@ -1,11 +1,12 @@
 (function(){
   'use strict';
-  if(window.__analyticsVolumeV4)return;
-  window.__analyticsVolumeV4=true;
+  if(window.__analyticsVolumeV5)return;
+  window.__analyticsVolumeV5=true;
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return isFinite(x)?x:0;}
   function reps(l){var r=l&&l.repsCompleted!=null?l.repsCompleted:l&&l.reps;return String(r).trim().toLowerCase()==='failure'?n(l&&l.actualReps!=null?l.actualReps:l&&l.completedReps):n(r);}
+  function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();return eq==='dumbbell'||eq==='dumbbells'?2:1;}
   function logs(){try{var x=JSON.parse(localStorage.getItem('workout_v3')||'{}').logs;return Array.isArray(x)?x:[]}catch(e){return[]}}
-  function volume(l){if(!l||l.cardio===true)return 0;return reps(l)*n(l.weight||l.load||l.actualWeight||0);}
+  function volume(l){if(!l||l.cardio===true)return 0;return reps(l)*n(l.weight||l.load||l.actualWeight||0)*multiplier(l);}
   function dateOf(l){var d=new Date(l&&(l.date||l.timestamp));return isNaN(d)?null:d;}
   function selected(){var y=document.getElementById('haYear'),m=document.getElementById('haMonth'),t=document.getElementById('haType'),r=document.getElementById('haRoutine');return {year:y?Number(y.value):0,month:m&&m.value!=='all'?Number(m.value):'all',type:t?t.value:'all',routine:r?r.value:'all'};}
   function typeMatches(l,want){if(!want||want==='all')return true;var a=[l.sheet,l.type,l.category,l.workoutType].map(function(v){return String(v==null?'':v).trim().toLowerCase()}),w=String(want).trim().toLowerCase();return a.indexOf(w)>=0||a.some(function(v){return v&&((v.indexOf(w)>=0)||(w.indexOf(v)>=0))});}
