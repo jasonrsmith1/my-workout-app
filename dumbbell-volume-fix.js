@@ -1,10 +1,10 @@
 (function(){
   'use strict';
-  if(window.__dumbbellVolumeFixV6)return;
-  window.__dumbbellVolumeFixV6=true;
+  if(window.__dumbbellVolumeFixV5)return;
+  window.__dumbbellVolumeFixV5=true;
   function num(v){var n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return Number.isFinite(n)?n:0;}
   function reps(l){var r=l&&l.repsCompleted!=null?l.repsCompleted:l&&l.reps;return String(r).trim().toLowerCase()==='failure'?num(l&&l.actualReps!=null?l&&l.actualReps:l&&l.completedReps):num(r);}
-  function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();return eq==='dumbbells'?2:1;}
+  function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();return eq==='dumbbell'||eq==='dumbbells'?2:1;}
   function isCardio(l){return !!(l&&l.cardio===true);}
   function volume(l){return isCardio(l)?0:reps(l)*num(l&&l.weight||l&&l.load||l&&l.actualWeight||0)*multiplier(l);}
   function logs(){try{var x=JSON.parse(localStorage.getItem('workout_v3')||'{}').logs;return Array.isArray(x)?x:[]}catch(e){return[];}}
