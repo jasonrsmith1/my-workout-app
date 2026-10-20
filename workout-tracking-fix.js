@@ -20,5 +20,8 @@
   function handle(e){var b=e.target&&e.target.closest?e.target.closest('.setdone'):null;if(!b)return;if(b.dataset.busy==='1')return;b.dataset.busy='1';setTimeout(function(){b.dataset.busy=''},350);saveRow(b.closest('.setrow'));e.preventDefault();e.stopImmediatePropagation()}
   document.addEventListener('pointerup',handle,true);document.addEventListener('click',handle,true);
   function changed(e){if(!e.target)return;var id=e.target.id||'';if(/^(rep_|wt_)/.test(id))clearRow(e.target.closest('.setrow'));if(/^eq_/.test(id)){ensureBodyWeight(e.target.closest('.card'));setTimeout(function(){syncBodyWeightFields()},0)}}document.addEventListener('input',changed);document.addEventListener('change',changed);
-  setTimeout(function(){migrate();restore();syncBodyWeightFields()},200);
+  function fixEquipmentOptions(){var required=['Barbell','Dumbbell','Dumbbells','Body Weight','Cable/Machine','Kettlebell','Other'];document.querySelectorAll('#routine select[id^="eq_"]').forEach(function(sel){required.forEach(function(name){var found=Array.from(sel.options).some(function(o){return String(o.value||'').trim().toLowerCase()===name.toLowerCase()});if(!found){var o=document.createElement('option');o.value=name;o.textContent=name;sel.appendChild(o)}})})}
+  function syncAll(){migrate();restore();syncBodyWeightFields();fixEquipmentOptions()}
+  setTimeout(syncAll,200);setTimeout(fixEquipmentOptions,700);
+  if(window.MutationObserver)new MutationObserver(function(){fixEquipmentOptions();syncBodyWeightFields()}).observe(document.body,{childList:true,subtree:true});
 })();
