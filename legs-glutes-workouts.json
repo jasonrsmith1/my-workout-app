@@ -48,6 +48,24 @@
         {"exercise":"Russian Twist","sets":"2","reps":"45 Sec","weight":"_____","section":"Core Finisher (10 Minutes) — 2 rounds; 45 sec work / 15 sec transition"},
         {"exercise":"Bridge and Reach","sets":"2","reps":"45 Sec","weight":"BW","section":"Core Finisher (10 Minutes) — 2 rounds; 45 sec work / 15 sec transition"}
       ]
+    },
+    {
+      "name": "Leg Strength + Core (60 Minutes)",
+      "exercises": [
+        {"exercise":"Goblet Squat","sets":"4","reps":"8–10","weight":"_____"},
+        {"exercise":"Romanian Deadlift","sets":"4","reps":"8–10","weight":"_____"},
+        {"exercise":"Alternating Lunges with Weight","sets":"3","reps":"10/leg","weight":"_____"},
+        {"exercise":"Dumbbell Sumo Squat","sets":"3","reps":"15","weight":"_____"},
+        {"exercise":"Hip Bridge","sets":"3","reps":"15","weight":"_____"},
+        {"exercise":"Bulgarian Split Squat","sets":"3","reps":"10/leg","weight":"_____"},
+        {"exercise":"Standing Calf Raise","sets":"3","reps":"20","weight":"_____"},
+        {"exercise":"Jump Squat","sets":"3","reps":"12","weight":"BW"},
+        {"exercise":"Wall Sit","sets":"2","reps":"45 sec","weight":"BW"},
+        {"exercise":"Bench Sit-Ups","sets":"2","reps":"20","weight":"BW","section":"Core Finisher (6 Minutes)"},
+        {"exercise":"Russian Twist","sets":"2","reps":"20","weight":"_____","section":"Core Finisher (6 Minutes)"},
+        {"exercise":"Planks","sets":"2","reps":"60 sec","weight":"BW","section":"Core Finisher (6 Minutes)"},
+        {"exercise":"Mountain Climbers","sets":"2","reps":"30 sec","weight":"BW","section":"Core Finisher (6 Minutes)"}
+      ]
     }
   ],
   "exerciseLibrary": [
@@ -81,6 +99,14 @@
     {"exercise":"Kettlebell Goblet Squat","muscles":["Legs","Glutes"],"sources":["Workbook — Legs.Glutes"]},
     {"exercise":"Weighted Hip Bridge","muscles":["Glutes"],"sources":["Workbook — Legs.Glutes"]},
     {"exercise":"Cable Pallof Press","muscles":["Core"],"sources":["Workbook — Legs.Glutes"]},
-    {"exercise":"Cable Wood Chop","muscles":["Core"],"sources":["Workbook — Legs.Glutes"]}
+    {"exercise":"Cable Wood Chop","muscles":["Core"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Romanian Deadlift","muscles":["Legs","Glutes"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Alternating Lunges with Weight","muscles":["Legs","Glutes"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Dumbbell Sumo Squat","muscles":["Legs","Glutes"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Hip Bridge","muscles":["Glutes"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Bulgarian Split Squat","muscles":["Legs","Glutes"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Standing Calf Raise","muscles":["Legs"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Wall Sit","muscles":["Legs"],"sources":["Workbook — Legs.Glutes"]},
+    {"exercise":"Mountain Climbers","muscles":["Core"],"sources":["Workbook — Legs.Glutes"]}
   ]
 }
