@@ -4,7 +4,7 @@
   window.__timerRoutineFixV2=true;
   var GENERIC=/^(workout|routine)(?:\s+[ivxlcdm0-9]+)?$/i;
   var PLACEHOLDER=/^(select\s+premade\s+workout|select\s+workout|choose\s+(?:a\s+)?workout|choose\s+(?:a\s+)?routine)$/i;
-  function good(v){v=String(v==null?'':'').trim();return v&&!GENERIC.test(v)&&!PLACEHOLDER.test(v)?v:''}
+  function good(v){v=String(v==null?'':v).trim();return v&&!GENERIC.test(v)&&!PLACEHOLDER.test(v)?v:''}
   function routineName(){
     var n='';
     try{
