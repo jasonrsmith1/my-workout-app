@@ -1,14 +1,14 @@
 (function(){
   'use strict';
-  if(window.__dumbbellVolumeFixV6)return;
+  if(window.__dumbbellVolumeFixV7)return;
   window.__dumbbellVolumeFixV6=true;
   function num(v){var n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return Number.isFinite(n)?n:0;}
   function reps(l){var r=l&&l.repsCompleted!=null?l.repsCompleted:l&&l.reps;return String(r).trim().toLowerCase()==='failure'?num(l&&l.actualReps!=null?l&&l.actualReps:l&&l.completedReps):num(r);}
-  function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();if(eq==='dumbbells'||eq==='dumbells')return 2;if(eq==='dumbbell')return 1;return 1;}
+  function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();if(eq==='dumbbells')return 2;if(eq==='dumbbell')return 1;return 1;}
   function isCardio(l){return !!(l&&l.cardio===true);}
   function volume(l){return isCardio(l)?0:reps(l)*num(l&&l.weight||l&&l.load||l&&l.actualWeight||0)*multiplier(l);}
   function logs(){try{var x=JSON.parse(localStorage.getItem('workout_v3')||'{}').logs;return Array.isArray(x)?x:[]}catch(e){return[];}}
-  function addEquipmentChoices(){document.querySelectorAll('select[id^="eq_"]').forEach(function(select){var values={};Array.prototype.forEach.call(select.options,function(o){values[String(o.value).trim().toLowerCase()]=true;});['Dumbbell','Dumbbells'].forEach(function(label){if(values[label.toLowerCase()])return;var o=document.createElement('option');o.value=label;o.textContent=label;select.appendChild(o);});});}
+  function addEquipmentChoices(){document.querySelectorAll('select[id^="eq_"]').forEach(function(select){Array.prototype.slice.call(select.options).forEach(function(o){if(String(o.value).trim().toLowerCase()==='dumbells')o.remove();});var values={};Array.prototype.forEach.call(select.options,function(o){values[String(o.value).trim().toLowerCase()]=true;});['Dumbbell','Dumbbells'].forEach(function(label){if(values[label.toLowerCase()])return;var o=document.createElement('option');o.value=label;o.textContent=label;select.appendChild(o);});});}
   function total(){return logs().reduce(function(a,l){return a+volume(l)},0);}
   function setText(el,value){if(el)el.textContent=Math.round(value).toLocaleString()+' lb';}
   function fixHome(){setText(document.getElementById('homeVolume'),total());}
