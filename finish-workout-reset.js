@@ -3,7 +3,7 @@
   if(window.__finishWorkoutResetV6)return;
   window.__finishWorkoutResetV6=true;
   function stateObj(){try{return(typeof state==='object'&&state)?state:null}catch(e){return null}}
-  function invalidName(v){var x=String(v||'').trim();return !x||/^(workout|routine)(?:\\s+[ivxlcdm0-9]+)?$/i.test(x)||/^(select|choose|pick)\\s+(a\\s+)?(premade\\s+)?(workout|routine)/i.test(x)||/^all workout types$/i.test(x)||/^all routines$/i.test(x)}
+  function invalidName(v){var x=String(v||'').trim();return !x||/^(workout|routine)(?:\s+[ivxlcdm0-9]+)?$/i.test(x)||/^(select|choose|pick)\s+(a\s+)?(premade\s+)?(workout|routine)/i.test(x)||/^all workout types$/i.test(x)||/^all routines$/i.test(x)}
   function displayedRoutineName(){
     try{
       var s=stateObj(),name='';
