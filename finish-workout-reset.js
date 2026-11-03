@@ -1,9 +1,9 @@
 (function(){
   'use strict';
   if(window.__finishWorkoutResetV6)return;
-  window.__finishWorkoutResetV5=true;
+  window.__finishWorkoutResetV6=true;
   function stateObj(){try{return(typeof state==='object'&&state)?state:null}catch(e){return null}}
-  function genericName(v){return /^(workout|routine)(?:\s+[ivxlcdm0-9]+)?$/i.test(String(v||'').trim())}
+  function invalidName(v){var x=String(v||'').trim();return !x||/^(workout|routine)(?:\\s+[ivxlcdm0-9]+)?$/i.test(x)||/^(select|choose|pick)\\s+(a\\s+)?(premade\\s+)?(workout|routine)/i.test(x)||/^all workout types$/i.test(x)||/^all routines$/i.test(x)}
   function displayedRoutineName(){
     try{
       var s=stateObj(),name='';
