@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   if(window.__dumbbellVolumeFixV7)return;
-  window.__dumbbellVolumeFixV6=true;
+  window.__dumbbellVolumeFixV7=true;
   function num(v){var n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return Number.isFinite(n)?n:0;}
   function reps(l){var r=l&&l.repsCompleted!=null?l.repsCompleted:l&&l.reps;return String(r).trim().toLowerCase()==='failure'?num(l&&l.actualReps!=null?l&&l.actualReps:l&&l.completedReps):num(r);}
   function multiplier(l){var eq=String(l&&l.equipment||'').trim().toLowerCase();if(eq==='dumbbells')return 2;if(eq==='dumbbell')return 1;return 1;}
