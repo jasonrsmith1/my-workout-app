@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   if(window.__workoutTrackingFixV10)return;
-  window.__workoutTrackingFixV9=true;
+  window.__workoutTrackingFixV10=true;
   var style=document.createElement('style');style.id='workout-tracking-state-v9';style.textContent='#routine .setrow .setdone{background:#e5e5ea!important;color:#6c6c70!important;border:2px solid #8e8e93!important;border-radius:11px!important;font-size:0!important;font-weight:800!important;cursor:pointer!important;opacity:1!important;box-shadow:none!important}#routine .setrow .setdone::after{content:"✓";font-size:20px!important;color:#8e8e93!important}#routine .setrow .setdone[data-saved="1"]{background:#34c759!important;border-color:#34c759!important;color:#fff!important}#routine .setrow .setdone[data-saved="1"]::after{color:#fff!important}#routine .setrow.completed{background:#dff7e5!important}';document.head.appendChild(style);
   function routineNameFor(sheet,routine){try{var g=DATA.find(function(x){return String(x.sheet)===String(sheet)}),r=g&&g.routines[Number(routine)];return r&&r.name?r.name:''}catch(e){return ''}}
   function getState(){try{if(typeof state==='object'&&state){state.logs=Array.isArray(state.logs)?state.logs:[];return state}}catch(e){}return {sheet:null,routine:0,logs:[],custom:[]}}
