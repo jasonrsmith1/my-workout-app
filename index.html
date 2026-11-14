@@ -525,6 +525,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   document.addEventListener('click',function(){setTimeout(fix,80);setTimeout(fix,300)},true);
 })();
 </script>
+<style id="equipment-touch-target-fix-v1">
+/* Keep the equipment control fully visible and tappable on narrow iPhone screens. */
+#routine .workout-summary-inline{flex-wrap:wrap!important;overflow:visible!important}
+#routine .workout-summary-equipment{display:flex!important;flex:1 1 100%!important;width:100%!important;min-width:0!important;align-items:center!important;gap:10px!important;white-space:normal!important;position:relative!important;z-index:2!important}
+#routine .workout-summary-equipment select{display:block!important;flex:1 1 auto!important;width:100%!important;min-width:0!important;max-width:none!important;min-height:44px!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-appearance:menulist!important;appearance:auto!important}
+</style>
 <style id="workout-summary-source-v1-css">
 .workout-summary-source-v1{width:100%;min-width:0}
 .workout-summary-exercise{width:100%;margin-bottom:7px}
